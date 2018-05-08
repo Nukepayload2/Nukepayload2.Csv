@@ -17,7 +17,7 @@ Public Class MyCsvModel
     Public Property Id As Integer
     Public Property Rate As Double
     Public Property Name As String
-    Public Property Date As Date
+    Public Property [Date] As Date
     Public Property IsUsed As Boolean
 End Class
 ```
