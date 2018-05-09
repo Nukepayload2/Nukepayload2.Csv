@@ -26,35 +26,11 @@ __C#__
 ```csharp
 public class MyCsvModel
 {
-    public int Id
-    {
-        get;
-        set;
-    }
-
-    public double Rate
-    {
-        get;
-        set;
-    }
-
-    public string Name
-    {
-        get;
-        set;
-    }
-
-    public DateTime Date
-    {
-        get;
-        set;
-    }
-
-    public bool IsUsed
-    {
-        get;
-        set;
-    }
+    public int Id { get; set; }
+    public double Rate { get; set; }
+    public string Name { get; set; }
+    public DateTime Date { get; set; }
+    public bool IsUsed { get; set; }
 }
 ```
 #### 2. Convert csv to `IReadOnlyList` of `MyCsvModel`
