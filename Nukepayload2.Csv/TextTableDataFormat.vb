@@ -10,7 +10,7 @@ Friend Class TextTableTextFormatter
     Implements ITextTableDataFormatter
 
     Public Function GetString(data As Object, format As String) As String Implements ITextTableDataFormatter.GetString
-        Return data
+        Return DirectCast(data, String)
     End Function
 
     Public Function Parse(text As String) As Object Implements ITextTableDataFormatter.Parse

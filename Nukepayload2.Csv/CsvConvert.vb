@@ -5,9 +5,9 @@ Imports System.Text
 ''' Convert collection to csv, or convert them back.
 ''' </summary>
 Public Class CsvConvert
-    Private Shared s_cachedColumns As New Dictionary(Of Type, (Name As String, FormatString As String, Formatter As ITextTableDataFormatter, Metadata As PropertyInfo)())
+    Private Shared s_cachedColumns As New Dictionary(Of Type, CsvColumnInfo())
     Private Shared s_cachedHeaderOrder As New Dictionary(Of Type, Integer())
-
+    Private Shared s_lineSeparator As String() = {Environment.NewLine}
     ''' <summary>
     ''' Deserialize the specified csv text to .NET collection.
     ''' </summary>
@@ -16,7 +16,7 @@ Public Class CsvConvert
     ''' <returns>The converted .NET collection</returns>
     ''' <exception cref="CsvFormatException"/>
     ''' <exception cref="FormatException"/>
-    Public Shared Function DeserializeObject(Of T As {New, Class})(text As String) As IReadOnlyList(Of T)
+    Public Shared Function DeserializeObject(Of T As New)(text As String) As IReadOnlyList(Of T)
         Return DeserializeObject(Of T)(text, CsvSettings.Default)
     End Function
 
@@ -29,7 +29,7 @@ Public Class CsvConvert
     ''' <returns>The converted .NET collection</returns>
     ''' <exception cref="CsvFormatException"/>
     ''' <exception cref="FormatException"/>
-    Public Shared Function DeserializeObject(Of T As {New, Class})(text As String, settings As CsvSettings) As IReadOnlyList(Of T)
+    Public Shared Function DeserializeObject(Of T As New)(text As String, settings As CsvSettings) As IReadOnlyList(Of T)
         If settings Is Nothing Then
             settings = CsvSettings.Default
         End If
@@ -38,7 +38,7 @@ Public Class CsvConvert
         If columns.Length = 0 Then
             Return Array.Empty(Of T)
         End If
-        Dim lines = text.Split({vbCrLf}, StringSplitOptions.RemoveEmptyEntries)
+        Dim lines = text.Split(s_lineSeparator, StringSplitOptions.RemoveEmptyEntries)
         If lines.Length < 2 Then
             Return Array.Empty(Of T)
         End If
@@ -65,7 +65,7 @@ Public Class CsvConvert
         Return entities
     End Function
 
-    Private Shared Function GetHeadOrderFor(Of T)() As Integer()
+    Private Shared Function GetHeadOrderFor(Of T)() As IReadOnlyList(Of Integer)
         Dim columnType = GetType(T)
         Dim value As Integer() = Nothing
         If Not s_cachedHeaderOrder.TryGetValue(columnType, value) Then
@@ -78,30 +78,30 @@ Public Class CsvConvert
         Return value
     End Function
 
-    Private Shared Function InputEntity(Of T)(line As String, columns() As (Name As String, FormatString As String, Formatter As ITextTableDataFormatter, Metadata As PropertyInfo), separator As Char) As T
+    Private Shared Function InputEntity(Of T As New)(line As String, columns() As CsvColumnInfo, separator As String) As T
         Dim lineContent = line.Split({separator}, StringSplitOptions.None)
-        Dim entity = Activator.CreateInstance(Of T)
+        Dim entity As New T
         For i = 0 To lineContent.Length - 1
             Dim col = columns(i)
             Dim data = lineContent(i)
-            col.Metadata.SetValue(entity, col.Formatter.Parse(data))
+            col(entity) = col.Formatter.Parse(data)
         Next
         Return entity
     End Function
 
-    Private Shared Function InputEntity(Of T As {New, Class})(line As String, order() As Integer, columns() As (Name As String, FormatString As String, Formatter As ITextTableDataFormatter, Metadata As PropertyInfo), separator As Char) As T
+    Private Shared Function InputEntity(Of T As New)(line As String, order As IReadOnlyList(Of Integer), columns() As CsvColumnInfo, separator As String) As T
         Dim lineContent = line.Split({separator}, StringSplitOptions.None)
         Dim entity As New T
         For i = 0 To lineContent.Length - 1
             Dim col = columns(i)
             Dim data = lineContent(order(i))
-            col.Metadata.SetValue(entity, col.Formatter.Parse(data))
+            col(entity) = col.Formatter.Parse(data)
         Next
         Return entity
     End Function
 
-    Private Shared Function GetHeadOrder(columns() As (Name As String, FormatString As String, Formatter As ITextTableDataFormatter, Metadata As PropertyInfo), head As String, separator As Char) As Integer()
-        Dim lineNames = head.Split({separator, " "}, StringSplitOptions.None)
+    Private Shared Function GetHeadOrder(columns() As CsvColumnInfo, head As String, separator As String) As IReadOnlyList(Of Integer)
+        Dim lineNames = head.Split({separator}, StringSplitOptions.None)
         If lineNames.Length <> columns.Length Then
             ThrowForColumnNotFound(columns, lineNames)
         End If
@@ -114,7 +114,7 @@ Public Class CsvConvert
         Return headOrder
     End Function
 
-    Private Shared Sub ThrowForColumnNotFound(columns() As (Name As String, FormatString As String, Formatter As ITextTableDataFormatter, Metadata As PropertyInfo), lineNames() As String)
+    Private Shared Sub ThrowForColumnNotFound(columns() As CsvColumnInfo, lineNames() As String)
         Throw New CsvFormatException((From c In columns Select c.Name), lineNames)
     End Sub
 
@@ -164,7 +164,7 @@ Public Class CsvConvert
                                                                   Select col.Name Into ToArray), order)))
                 For Each obj In objs
                     sb.AppendLine(String.Join(separator, OrderSelect((Aggregate col In columns
-                                                         Let value = col.Metadata.GetValue(obj)
+                                                         Let value = col(obj)
                                                          Select col.Formatter.GetString(value, col.FormatString)
                                                          Into ToArray), order)))
                 Next
@@ -172,29 +172,29 @@ Public Class CsvConvert
                 sb.AppendLine(String.Join(separator, From col In columns Select col.Name))
                 For Each obj In objs
                     sb.AppendLine(String.Join(separator, From col In columns
-                                                         Let value = col.Metadata.GetValue(obj)
+                                                         Let value = col(obj)
                                                          Select col.Formatter.GetString(value, col.FormatString)))
                 Next
         End Select
         Return sb.ToString
     End Function
 
-    Private Shared Iterator Function OrderSelect(Of T)(collection As T(), order As Integer()) As IEnumerable(Of T)
-        For i = 0 To order.Length - 1
+    Private Shared Iterator Function OrderSelect(Of T)(collection As T(), order As IReadOnlyList(Of Integer)) As IEnumerable(Of T)
+        For i = 0 To order.Count - 1
             Yield collection(order(i))
         Next
     End Function
 
-    Private Shared Function GetColumns(columnType As Type) As (Name As String, FormatString As String, Formatter As ITextTableDataFormatter, Metadata As PropertyInfo)()
-        Dim value As (Name As String, FormatString As String, Formatter As ITextTableDataFormatter, Metadata As PropertyInfo)() = Nothing
+    Private Shared Function GetColumns(columnType As Type) As CsvColumnInfo()
+        Dim value As CsvColumnInfo() = Nothing
         If Not s_cachedColumns.TryGetValue(columnType, value) Then
             value = Aggregate prop In columnType.GetRuntimeProperties
                     Where prop.CanRead AndAlso prop.GetMethod.IsPublic
                     Let formatInfo = prop.GetCustomAttribute(Of ColumnFormatAttribute)
-                    Select (Name:=If(formatInfo?.Name, prop.Name),
+                    Select New CsvColumnInfo(If(formatInfo?.Name, prop.Name),
                            formatInfo?.FormatString,
-                           Formatter:=prop.PropertyType.GetFormatter,
-                           Metadata:=prop) Into ToArray
+                           prop.PropertyType.GetFormatter,
+                           prop.GetMethod, prop.SetMethod) Into ToArray
             s_cachedColumns.Add(columnType, value)
         End If
         Return value
