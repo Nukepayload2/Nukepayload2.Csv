@@ -1,6 +1,9 @@
 ﻿Imports System.Runtime.CompilerServices
+Imports System.Text
+Imports Nukepayload2.Csv
 
 Friend Interface ITextTableDataFormatter
+    Sub WriteTo(data As Object, format As String, sb As StringBuilder)
     Function GetString(data As Object, format As String) As String
     Function Parse(text As String) As Object
 End Interface
@@ -9,12 +12,16 @@ Friend Class TextTableTextFormatter
     Inherits Singleton(Of TextTableTextFormatter)
     Implements ITextTableDataFormatter
 
-    Public Function GetString(data As Object, format As String) As String Implements ITextTableDataFormatter.GetString
-        Return DirectCast(data, String)
-    End Function
+    Public Sub WriteTo(data As Object, format As String, sb As StringBuilder) Implements ITextTableDataFormatter.WriteTo
+        sb.Append(DirectCast(data, String))
+    End Sub
 
     Public Function Parse(text As String) As Object Implements ITextTableDataFormatter.Parse
         Return text
+    End Function
+
+    Public Function GetString(data As Object, format As String) As String Implements ITextTableDataFormatter.GetString
+        Return DirectCast(data, String)
     End Function
 End Class
 
@@ -22,15 +29,16 @@ Friend Class TextTableDoubleFormatter
     Inherits Singleton(Of TextTableDoubleFormatter)
     Implements ITextTableDataFormatter
 
-    Public Function GetString(data As Object, format As String) As String Implements ITextTableDataFormatter.GetString
-        If format = Nothing Then
-            Return data.ToString
-        End If
-        Return DirectCast(data, Double).ToString(format)
-    End Function
+    Public Sub WriteTo(data As Object, format As String, sb As StringBuilder) Implements ITextTableDataFormatter.WriteTo
+        sb.Append(DirectCast(data, Double).ToString(format))
+    End Sub
 
     Public Function Parse(text As String) As Object Implements ITextTableDataFormatter.Parse
         Return Double.Parse(text)
+    End Function
+
+    Public Function GetString(data As Object, format As String) As String Implements ITextTableDataFormatter.GetString
+        Return DirectCast(data, Double).ToString(format)
     End Function
 End Class
 
@@ -38,15 +46,16 @@ Friend Class TextTableIntegerFormatter
     Inherits Singleton(Of TextTableIntegerFormatter)
     Implements ITextTableDataFormatter
 
-    Public Function GetString(data As Object, format As String) As String Implements ITextTableDataFormatter.GetString
-        If format = Nothing Then
-            Return data.ToString
-        End If
-        Return DirectCast(data, Integer).ToString(format)
-    End Function
+    Public Sub WriteTo(data As Object, format As String, sb As StringBuilder) Implements ITextTableDataFormatter.WriteTo
+        sb.Append(DirectCast(data, Integer).ToString(format))
+    End Sub
 
     Public Function Parse(text As String) As Object Implements ITextTableDataFormatter.Parse
         Return Integer.Parse(text)
+    End Function
+
+    Public Function GetString(data As Object, format As String) As String Implements ITextTableDataFormatter.GetString
+        Return DirectCast(data, Integer).ToString(format)
     End Function
 End Class
 
@@ -54,15 +63,16 @@ Friend Class TextTableBooleanFormatter
     Inherits Singleton(Of TextTableBooleanFormatter)
     Implements ITextTableDataFormatter
 
-    Public Function GetString(data As Object, format As String) As String Implements ITextTableDataFormatter.GetString
-        If format = Nothing Then
-            Return data.ToString
-        End If
-        Return DirectCast(data, Boolean).ToString
-    End Function
+    Public Sub WriteTo(data As Object, format As String, sb As StringBuilder) Implements ITextTableDataFormatter.WriteTo
+        sb.Append(DirectCast(data, Boolean))
+    End Sub
 
     Public Function Parse(text As String) As Object Implements ITextTableDataFormatter.Parse
         Return Boolean.Parse(text)
+    End Function
+
+    Public Function GetString(data As Object, format As String) As String Implements ITextTableDataFormatter.GetString
+        Return DirectCast(data, Boolean).ToString
     End Function
 End Class
 
@@ -70,15 +80,16 @@ Friend Class TextTableDateFormatter
     Inherits Singleton(Of TextTableDateFormatter)
     Implements ITextTableDataFormatter
 
-    Public Function GetString(data As Object, format As String) As String Implements ITextTableDataFormatter.GetString
-        If format = Nothing Then
-            Return data.ToString
-        End If
-        Return DirectCast(data, Date).ToString(format)
-    End Function
+    Public Sub WriteTo(data As Object, format As String, sb As StringBuilder) Implements ITextTableDataFormatter.WriteTo
+        sb.Append(DirectCast(data, Date).ToString(format))
+    End Sub
 
     Public Function Parse(text As String) As Object Implements ITextTableDataFormatter.Parse
         Return Date.Parse(text)
+    End Function
+
+    Public Function GetString(data As Object, format As String) As String Implements ITextTableDataFormatter.GetString
+        Return DirectCast(data, Date).ToString(format)
     End Function
 End Class
 

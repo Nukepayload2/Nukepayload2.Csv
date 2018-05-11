@@ -179,12 +179,12 @@ Public Class CsvConvert
                             Dim obj = roList(i)
                             Dim col = columns(order(j))
                             Dim value = col(obj)
-                            Dim formatted = col.Formatter.GetString(value, col.FormatString)
-                            sb.Append(formatted).Append(separator)
+                            col.Formatter.WriteTo(value, col.FormatString, sb)
+                            sb.Append(separator)
                         Next
                         Dim lastValue = lastCol(roList(i))
-                        Dim lastFormatted = lastCol.Formatter.GetString(lastValue, lastCol.FormatString)
-                        sb.AppendLine(lastFormatted)
+                        lastCol.Formatter.WriteTo(lastValue, lastCol.FormatString, sb)
+                        sb.AppendLine()
                     Next
                 Else
                     ' Use non IReadOnlyList(Of T) means high-performance is not required.
@@ -214,12 +214,12 @@ Public Class CsvConvert
                             Dim obj = roList(i)
                             Dim col = columns(j)
                             Dim value = col(obj)
-                            Dim formatted = col.Formatter.GetString(value, col.FormatString)
-                            sb.Append(formatted).Append(separator)
+                            col.Formatter.WriteTo(value, col.FormatString, sb)
+                            sb.Append(separator)
                         Next
                         Dim lastValue = lastCol(roList(i))
-                        Dim lastFormatted = lastCol.Formatter.GetString(lastValue, lastCol.FormatString)
-                        sb.AppendLine(lastFormatted)
+                        lastCol.Formatter.WriteTo(lastValue, lastCol.FormatString, sb)
+                        sb.AppendLine()
                     Next
                 Else
                     ' Use non IReadOnlyList(Of T) means high-performance is not required.
