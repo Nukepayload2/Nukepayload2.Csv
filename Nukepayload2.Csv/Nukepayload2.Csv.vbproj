@@ -3,6 +3,16 @@
   <PropertyGroup>
     <RootNamespace>Nukepayload2.Csv</RootNamespace>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Nukepayload2, Community Contribution</Authors>
+    <Copyright>Copyright 2018 Nukepayload2</Copyright>
+    <Company>Nukepayload2</Company>
+    <RepositoryUrl>https://github.com/Nukepayload2/Nukepayload2.Csv.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>csv, formatter, serializer, converter, vb, netstandard</PackageTags>
+    <PackageReleaseNotes>Initial commit.</PackageReleaseNotes>
+    <Description>Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter.</Description>
+    <Version>1.0.0-beta1</Version>
+    <PackageProjectUrl>https://github.com/Nukepayload2/Nukepayload2.Csv</PackageProjectUrl>
   </PropertyGroup>
 
 </Project>
