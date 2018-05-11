@@ -1,9 +1,9 @@
-# Nukepayload2.Csv
+ï»¿# Nukepayload2.Csv
 Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter.
 
 
 
-Èç¹ûÄãĞèÒªÖĞÎÄ½éÉÜ£¬ÇëÏòÏÂ¹ö¶¯Ò³Ãæ¡£
+å¦‚æœä½ éœ€è¦ä¸­æ–‡ä»‹ç»ï¼Œè¯·å‘ä¸‹æ»šåŠ¨é¡µé¢ã€‚
 
 ## Sample Code
 ### Convert Csv string to .NET Object
@@ -66,19 +66,19 @@ csv = CsvConvert.SerializeObject(converted);
 - VB and C# model class generator will be added.
 - Performance improvements.
 
-# Nukepayload2.Csv ÖĞÎÄ½éÉÜ
+# Nukepayload2.Csv ä¸­æ–‡ä»‹ç»
 
-Nukepayload2.Csv ÊÇÒ»¸ö¿çÆ½Ì¨µÄ Csv ×Ö·û´® &lt;==&gt; .NET ¶ÔÏó×ª»»Æ÷¡£
+Nukepayload2.Csv æ˜¯ä¸€ä¸ªè·¨å¹³å°çš„ Csv å­—ç¬¦ä¸² &lt;==&gt; .NET å¯¹è±¡è½¬æ¢å™¨ã€‚
 
-## Ê¾Àı´úÂë
-### ½« Csv ×Ö·û´®×ª»»Îª .NET ¶ÔÏó
-Ä¿±ê: °ÑÏÂÃæµÄ csv ×Ö·û´®×ª»»Îª .NET ¶ÔÏó
+## ç¤ºä¾‹ä»£ç 
+### å°† Csv å­—ç¬¦ä¸²è½¬æ¢ä¸º .NET å¯¹è±¡
+ç›®æ ‡: æŠŠä¸‹é¢çš„ csv å­—ç¬¦ä¸²è½¬æ¢ä¸º .NET å¯¹è±¡
 ```csv
 Id,Rate,Name,Date,IsUsed
 -233,12345.12,test string,2018-05-09,True
 0,-12345.12,,2018-09-09,False
 ```
-#### 1. ´´½¨Ä£ĞÍÀà
+#### 1. åˆ›å»ºæ¨¡å‹ç±»
 
 __VB__
 ```vb
@@ -102,8 +102,8 @@ public class MyCsvModel
     public bool IsUsed { get; set; }
 }
 ```
-#### 2. ½« csv ×ª»»Îª `MyCsvModel` µÄ `IReadOnlyList`
-¼Ù¶¨ `csv` ÊÇ°üº¬ csv µÄ `System.String`¡£
+#### 2. å°† csv è½¬æ¢ä¸º `MyCsvModel` çš„ `IReadOnlyList`
+å‡å®š `csv` æ˜¯åŒ…å« csv çš„ `System.String`ã€‚
 
 __VB__
 ```vb
@@ -115,7 +115,7 @@ __C#__
 var converted = CsvConvert.DeserializeObject<MyCsvModel>(csv);
 ```
 
-### ½« .NET ¶ÔÏó×ª»»Îª Csv ×Ö·û´®
+### å°† .NET å¯¹è±¡è½¬æ¢ä¸º Csv å­—ç¬¦ä¸²
 
 __VB__
 ```vb
@@ -127,6 +127,6 @@ __C#__
 csv = CsvConvert.SerializeObject(converted);
 ```
 
-## ÏÂÒ»²½µÄ¼Æ»®?
-- ½«Ìí¼Ó VB ºÍ C# µÄÄ£ĞÍÀàÉú³ÉÆ÷¡£
-- ÌáÉıĞÔÄÜ¡£
+## ä¸‹ä¸€æ­¥çš„è®¡åˆ’?
+- å°†æ·»åŠ  VB å’Œ C# çš„æ¨¡å‹ç±»ç”Ÿæˆå™¨ã€‚
+- æå‡æ€§èƒ½ã€‚
