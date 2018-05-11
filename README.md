@@ -1,6 +1,10 @@
 # Nukepayload2.Csv
 Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter.
 
+__Get on Nuget__
+
+https://www.nuget.org/packages/Nukepayload2.Csv
+
 如果你需要中文介绍，请向下滚动页面。
 
 ## Sample Code
@@ -67,6 +71,10 @@ csv = CsvConvert.SerializeObject(converted);
 # Nukepayload2.Csv 中文介绍
 
 Nukepayload2.Csv 是一个跨平台的 Csv 字符串 &lt;==&gt; .NET 对象转换器。
+
+__在 Nuget 下载__
+
+https://www.nuget.org/packages/Nukepayload2.Csv
 
 ## 示例代码
 ### 将 Csv 字符串转换为 .NET 对象

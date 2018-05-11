@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Nukepayload2.Csv</id>
+    <version>1.0.0</version>
+    <title>Nukepayload2.Csv</title>
+    <authors>Nukepayload2</authors>
+    <owners>Nukepayload2</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/Nukepayload2/Nukepayload2.Csv</projectUrl>
+    <description>Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter.
+Commonly Used members:
+Nukepayload2.Csv.CsvConvert.SerializeObject
+Nukepayload2.Csv.CsvConvert.DeserializeObject</description>
+    <summary>Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter.</summary>
+    <releaseNotes>Initial commit.</releaseNotes>
+    <copyright>Copyright 2018 Nukepayload2</copyright>
+    <tags>csv, formatter, serializer, converter, vb, netstandard</tags>
+    <repository type="git" url="https://github.com/Nukepayload2/Nukepayload2.Csv.git" />
+    <dependencies>
+      <group targetFramework=".NETStandard2.0" />
+    </dependencies>
+  </metadata>
+</package>
