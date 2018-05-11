@@ -21,7 +21,4 @@ Friend Structure CsvColumnInfo
         End Set
     End Property
 
-    Public Shared Widening Operator CType(tuple As (Name As String, FormatString As String, Formatter As ITextTableDataFormatter, Metadata As PropertyInfo)) As CsvColumnInfo
-        Return New CsvColumnInfo(tuple.Name, tuple.FormatString, tuple.Formatter, tuple.Metadata.GetMethod, tuple.Metadata.SetMethod)
-    End Operator
 End Structure

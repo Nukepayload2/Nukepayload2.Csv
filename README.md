@@ -64,7 +64,7 @@ csv = CsvConvert.SerializeObject(converted);
 
 ## What is next?
 - VB and C# model class generator will be added.
-- Performance improvements via `System.Span(Of T)`
+- Performance improvements.
 
 # Nukepayload2.Csv 中文介绍
 
@@ -129,4 +129,4 @@ csv = CsvConvert.SerializeObject(converted);
 
 ## 下一步的计划?
 - 将添加 VB 和 C# 的模型类生成器。
-- 通过 `System.Span(Of T)` 提升性能。
+- 提升性能。

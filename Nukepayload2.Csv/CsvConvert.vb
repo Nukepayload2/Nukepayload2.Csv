@@ -1,5 +1,4 @@
 ﻿Imports System.Reflection
-Imports System.Text
 
 ''' <summary>
 ''' Convert collection to csv, or convert them back.
@@ -65,7 +64,7 @@ Public Class CsvConvert
         Return entities
     End Function
 
-    Private Shared Function GetHeadOrderFor(Of T)() As IReadOnlyList(Of Integer)
+    Private Shared Function GetHeadOrderFor(Of T)() As Integer()
         Dim columnType = GetType(T)
         Dim value As Integer() = Nothing
         If Not s_cachedHeaderOrder.TryGetValue(columnType, value) Then
@@ -89,7 +88,7 @@ Public Class CsvConvert
         Return entity
     End Function
 
-    Private Shared Function InputEntity(Of T As New)(line As String, order As IReadOnlyList(Of Integer), columns() As CsvColumnInfo, separator As String) As T
+    Private Shared Function InputEntity(Of T As New)(line As String, order As Integer(), columns() As CsvColumnInfo, separator As String) As T
         Dim lineContent = line.Split({separator}, StringSplitOptions.None)
         Dim entity As New T
         For i = 0 To lineContent.Length - 1
@@ -100,7 +99,7 @@ Public Class CsvConvert
         Return entity
     End Function
 
-    Private Shared Function GetHeadOrder(columns() As CsvColumnInfo, head As String, separator As String) As IReadOnlyList(Of Integer)
+    Private Shared Function GetHeadOrder(columns() As CsvColumnInfo, head As String, separator As String) As Integer()
         Dim lineNames = head.Split({separator}, StringSplitOptions.None)
         If lineNames.Length <> columns.Length Then
             ThrowForColumnNotFound(columns, lineNames)
@@ -134,7 +133,7 @@ Public Class CsvConvert
     ''' <param name="objs">The collection that you want to serialize.</param>
     ''' <returns>Csv text</returns>
     ''' <exception cref="NotSupportedException"/>
-    Public Shared Function SerializeObject(Of T As Class)(objs As IEnumerable(Of T)) As String
+    Public Shared Function SerializeObject(Of T)(objs As IEnumerable(Of T)) As String
         Return SerializeObject(objs, CsvSettings.Default)
     End Function
 
@@ -146,35 +145,91 @@ Public Class CsvConvert
     ''' <param name="settings">Custom csv format. If this parameter is null (Nothing in Visual Basic), the default settings will be used.</param>
     ''' <returns>Csv text</returns>
     ''' <exception cref="NotSupportedException"/>
-    Public Shared Function SerializeObject(Of T As Class)(objs As IEnumerable(Of T), settings As CsvSettings) As String
+    Public Shared Function SerializeObject(Of T)(objs As IEnumerable(Of T), settings As CsvSettings) As String
         If settings Is Nothing Then
             settings = CsvSettings.Default
         End If
         Dim columnType As Type = GetType(T)
         Dim columns = GetColumns(columnType)
-        If columns.Length = 0 Then
+        Dim columnLength As Integer = columns.Length
+        If columnLength = 0 Then
             Return String.Empty
         End If
         Dim separator = settings.Separator
-        Dim sb As New StringBuilder
+        ' Enable StringBuilder pooling.
+        Dim sb = StringBuilderCache.Instance
         Select Case settings.ColumnOrderKind
             Case CsvColumnOrderKind.Explicit
                 Dim order = GetHeadOrderFor(Of T)()
-                sb.AppendLine(String.Join(separator, OrderSelect((Aggregate col In columns
-                                                                  Select col.Name Into ToArray), order)))
-                For Each obj In objs
-                    sb.AppendLine(String.Join(separator, OrderSelect((Aggregate col In columns
-                                                         Let value = col(obj)
-                                                         Select col.Formatter.GetString(value, col.FormatString)
-                                                         Into ToArray), order)))
+                ' Convert to non-linq code on hot paths.
+                'sb.AppendLine(String.Join(separator, OrderSelect((Aggregate col In columns
+                '                                                  Select col.Name Into ToArray), order)))
+                Dim i As Integer
+                For i = 0 To columnLength - 2
+                    Dim col = columns(order(i))
+                    sb.Append(col.Name).Append(separator)
                 Next
+                Dim lastCol = columns(order(i))
+                sb.AppendLine(lastCol.Name)
+                ' IReadOnlyList(Of T) special case
+                Dim roList As IReadOnlyList(Of T) = TryCast(objs, IReadOnlyList(Of T))
+                If roList IsNot Nothing Then
+                    For i = 0 To roList.Count - 1
+                        For j = 0 To columnLength - 2
+                            Dim obj = roList(i)
+                            Dim col = columns(order(j))
+                            Dim value = col(obj)
+                            Dim formatted = col.Formatter.GetString(value, col.FormatString)
+                            sb.Append(formatted).Append(separator)
+                        Next
+                        Dim lastValue = lastCol(roList(i))
+                        Dim lastFormatted = lastCol.Formatter.GetString(lastValue, lastCol.FormatString)
+                        sb.AppendLine(lastFormatted)
+                    Next
+                Else
+                    ' Use non IReadOnlyList(Of T) means high-performance is not required.
+                    ' We will not optimize for this path.
+                    For Each obj In objs
+                        sb.AppendLine(String.Join(separator, OrderSelect((Aggregate col In columns
+                                                             Let value = col(obj)
+                                                             Select col.Formatter.GetString(value, col.FormatString)
+                                                             Into ToArray), order)))
+                    Next
+                End If
             Case Else
-                sb.AppendLine(String.Join(separator, From col In columns Select col.Name))
-                For Each obj In objs
-                    sb.AppendLine(String.Join(separator, From col In columns
-                                                         Let value = col(obj)
-                                                         Select col.Formatter.GetString(value, col.FormatString)))
+                ' Convert to non-linq code on hot paths.
+                ' sb.AppendLine(String.Join(separator, From col In columns Select col.Name))
+                Dim i As Integer
+                For i = 0 To columnLength - 2
+                    Dim col = columns(i)
+                    sb.Append(col.Name).Append(separator)
                 Next
+                Dim lastCol = columns(i)
+                sb.AppendLine(lastCol.Name)
+                ' IReadOnlyList(Of T) special case
+                Dim roList As IReadOnlyList(Of T) = TryCast(objs, IReadOnlyList(Of T))
+                If roList IsNot Nothing Then
+                    For i = 0 To roList.Count - 1
+                        For j = 0 To columnLength - 2
+                            Dim obj = roList(i)
+                            Dim col = columns(j)
+                            Dim value = col(obj)
+                            Dim formatted = col.Formatter.GetString(value, col.FormatString)
+                            sb.Append(formatted).Append(separator)
+                        Next
+                        Dim lastValue = lastCol(roList(i))
+                        Dim lastFormatted = lastCol.Formatter.GetString(lastValue, lastCol.FormatString)
+                        sb.AppendLine(lastFormatted)
+                    Next
+                Else
+                    ' Use non IReadOnlyList(Of T) means high-performance is not required.
+                    ' We will not optimize for this path.
+                    For Each obj In objs
+                        sb.AppendLine(String.Join(separator, From col In columns
+                                                             Let value = col(obj)
+                                                             Select col.Formatter.GetString(value, col.FormatString)))
+                    Next
+                End If
         End Select
         Return sb.ToString
     End Function
