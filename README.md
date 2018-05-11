@@ -1,7 +1,5 @@
-﻿# Nukepayload2.Csv
+# Nukepayload2.Csv
 Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter.
-
-
 
 如果你需要中文介绍，请向下滚动页面。
 
