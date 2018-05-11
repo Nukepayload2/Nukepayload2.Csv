@@ -7,6 +7,7 @@ Public Class CsvConvert
     Private Shared s_cachedColumns As New Dictionary(Of Type, CsvColumnInfo())
     Private Shared s_cachedHeaderOrder As New Dictionary(Of Type, Integer())
     Private Shared s_lineSeparator As String() = {Environment.NewLine}
+
     ''' <summary>
     ''' Deserialize the specified csv text to .NET collection.
     ''' </summary>
@@ -15,6 +16,7 @@ Public Class CsvConvert
     ''' <returns>The converted .NET collection</returns>
     ''' <exception cref="CsvFormatException"/>
     ''' <exception cref="FormatException"/>
+    ''' <exception cref="NullReferenceException"/>
     Public Shared Function DeserializeObject(Of T As New)(text As String) As IReadOnlyList(Of T)
         Return DeserializeObject(Of T)(text, CsvSettings.Default)
     End Function
@@ -24,10 +26,11 @@ Public Class CsvConvert
     ''' </summary>
     ''' <typeparam name="T">The sub type of the collection.</typeparam>
     ''' <param name="text">Csv text.</param>
-    ''' <param name="settings">Custom csv format. If this parameter is null (Nothing in Visual Basic), the default settings will be used.</param>
+    ''' <param name="settings">Custom csv format. If this parameter is <see langword="null"/> (<see langword="Nothing"/> in Visual Basic), the default settings will be used.</param>
     ''' <returns>The converted .NET collection</returns>
     ''' <exception cref="CsvFormatException"/>
     ''' <exception cref="FormatException"/>
+    ''' <exception cref="NullReferenceException"/>
     Public Shared Function DeserializeObject(Of T As New)(text As String, settings As CsvSettings) As IReadOnlyList(Of T)
         If settings Is Nothing Then
             settings = CsvSettings.Default
@@ -133,6 +136,7 @@ Public Class CsvConvert
     ''' <param name="objs">The collection that you want to serialize.</param>
     ''' <returns>Csv text</returns>
     ''' <exception cref="NotSupportedException"/>
+    ''' <exception cref="NullReferenceException"/>
     Public Shared Function SerializeObject(Of T)(objs As IEnumerable(Of T)) As String
         Return SerializeObject(objs, CsvSettings.Default)
     End Function
@@ -142,9 +146,10 @@ Public Class CsvConvert
     ''' </summary>
     ''' <typeparam name="T">The sub type of the collection.</typeparam>
     ''' <param name="objs">The collection that you want to serialize.</param>
-    ''' <param name="settings">Custom csv format. If this parameter is null (Nothing in Visual Basic), the default settings will be used.</param>
+    ''' <param name="settings">Custom csv format. If this parameter is <see langword="null"/> (<see langword="Nothing"/> in Visual Basic), the default settings will be used.</param>
     ''' <returns>Csv text</returns>
     ''' <exception cref="NotSupportedException"/>
+    ''' <exception cref="NullReferenceException"/>
     Public Shared Function SerializeObject(Of T)(objs As IEnumerable(Of T), settings As CsvSettings) As String
         If settings Is Nothing Then
             settings = CsvSettings.Default
