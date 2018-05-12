@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Nukepayload2.Csv.ModelGenerator": {
+      "commandName": "Project",
+      "commandLineArgs": "-p test.txt -s \",\" -o test.vb"
+    }
+  }
+}

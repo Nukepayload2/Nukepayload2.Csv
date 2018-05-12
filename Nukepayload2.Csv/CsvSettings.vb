@@ -2,10 +2,27 @@
 ''' Custom csv format.
 ''' </summary>
 Public Class CsvSettings
+    Private _NewLine As String = Environment.NewLine
     ''' <summary>
     ''' The separator of csv. The default value is ",".
     ''' </summary>
     Public Property Separator As String = ","
+    ''' <summary>
+    ''' The new line of csv. The default value is <see cref="Environment.NewLine"/>.
+    ''' </summary>
+    Public Property NewLine As String
+        Get
+            Return _NewLine
+        End Get
+        Set(value As String)
+            _NewLine = value
+            _NewLineSeparators = {value}
+        End Set
+    End Property
+    ''' <summary>
+    ''' Work around for missing Stirng.Split(String, StringSplitOptions) in non .net core 2.0 runtime.
+    ''' </summary>
+    Friend ReadOnly Property NewLineSeparators As String() = {NewLine}
     ''' <summary>
     ''' The column order of csv. The default value is <see cref="CsvColumnOrderKind.Auto"/>.
     ''' </summary>

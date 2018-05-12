@@ -6,7 +6,6 @@
 Public Class CsvConvert
     Private Shared s_cachedColumns As New Dictionary(Of Type, CsvColumnInfo())
     Private Shared s_cachedHeaderOrder As New Dictionary(Of Type, Integer())
-    Private Shared s_lineSeparator As String() = {Environment.NewLine}
 
     ''' <summary>
     ''' Deserialize the specified csv text to .NET collection.
@@ -40,7 +39,7 @@ Public Class CsvConvert
         If columns.Length = 0 Then
             Return Array.Empty(Of T)
         End If
-        Dim lines = text.Split(s_lineSeparator, StringSplitOptions.RemoveEmptyEntries)
+        Dim lines = text.Split(settings.NewLineSeparators, StringSplitOptions.RemoveEmptyEntries)
         If lines.Length < 2 Then
             Return Array.Empty(Of T)
         End If
@@ -163,19 +162,18 @@ Public Class CsvConvert
         Dim separator = settings.Separator
         ' Enable StringBuilder pooling.
         Dim sb = StringBuilderCache.Instance
+        Dim newline = settings.NewLine
         Select Case settings.ColumnOrderKind
             Case CsvColumnOrderKind.Explicit
                 Dim order = GetHeadOrderFor(Of T)()
                 ' Convert to non-linq code on hot paths.
-                'sb.AppendLine(String.Join(separator, OrderSelect((Aggregate col In columns
-                '                                                  Select col.Name Into ToArray), order)))
                 Dim i As Integer
                 For i = 0 To columnLength - 2
                     Dim col = columns(order(i))
                     sb.Append(col.Name).Append(separator)
                 Next
                 Dim lastCol = columns(order(i))
-                sb.AppendLine(lastCol.Name)
+                sb.Append(lastCol.Name).Append(newline)
                 ' IReadOnlyList(Of T) special case
                 Dim roList As IReadOnlyList(Of T) = TryCast(objs, IReadOnlyList(Of T))
                 If roList IsNot Nothing Then
@@ -189,28 +187,27 @@ Public Class CsvConvert
                         Next
                         Dim lastValue = lastCol(roList(i))
                         lastCol.Formatter.WriteTo(lastValue, lastCol.FormatString, sb)
-                        sb.AppendLine()
+                        sb.Append(newline)
                     Next
                 Else
                     ' Use non IReadOnlyList(Of T) means high-performance is not required.
                     ' We will not optimize for this path.
                     For Each obj In objs
-                        sb.AppendLine(String.Join(separator, OrderSelect((Aggregate col In columns
+                        sb.Append(String.Join(separator, OrderSelect((Aggregate col In columns
                                                              Let value = col(obj)
                                                              Select col.Formatter.GetString(value, col.FormatString)
-                                                             Into ToArray), order)))
+                                                             Into ToArray), order))).Append(newline)
                     Next
                 End If
             Case Else
                 ' Convert to non-linq code on hot paths.
-                ' sb.AppendLine(String.Join(separator, From col In columns Select col.Name))
                 Dim i As Integer
                 For i = 0 To columnLength - 2
                     Dim col = columns(i)
                     sb.Append(col.Name).Append(separator)
                 Next
                 Dim lastCol = columns(i)
-                sb.AppendLine(lastCol.Name)
+                sb.Append(lastCol.Name).Append(newline)
                 ' IReadOnlyList(Of T) special case
                 Dim roList As IReadOnlyList(Of T) = TryCast(objs, IReadOnlyList(Of T))
                 If roList IsNot Nothing Then
@@ -224,15 +221,15 @@ Public Class CsvConvert
                         Next
                         Dim lastValue = lastCol(roList(i))
                         lastCol.Formatter.WriteTo(lastValue, lastCol.FormatString, sb)
-                        sb.AppendLine()
+                        sb.Append(newline)
                     Next
                 Else
                     ' Use non IReadOnlyList(Of T) means high-performance is not required.
                     ' We will not optimize for this path.
                     For Each obj In objs
-                        sb.AppendLine(String.Join(separator, From col In columns
-                                                             Let value = col(obj)
-                                                             Select col.Formatter.GetString(value, col.FormatString)))
+                        sb.Append(String.Join(separator, From col In columns
+                                                         Let value = col(obj)
+                                                         Select col.Formatter.GetString(value, col.FormatString))).Append(newline)
                     Next
                 End If
         End Select

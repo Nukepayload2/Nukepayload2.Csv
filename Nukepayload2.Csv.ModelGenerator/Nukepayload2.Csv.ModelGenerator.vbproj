@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Nukepayload2.Csv.ModelGenerator</RootNamespace>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nukepayload2.CodeAnalysis" Version="1.0.1-beta" />
+    <PackageReference Include="Nukepayload2.ConsoleFramework" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nukepayload2.Csv\Nukepayload2.Csv.vbproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="test.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

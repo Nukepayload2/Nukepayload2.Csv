@@ -4,6 +4,15 @@
 <AttributeUsage(AttributeTargets.Property)>
 Public Class ColumnFormatAttribute
     Inherits Attribute
+
+    Sub New()
+
+    End Sub
+
+    Public Sub New(columnName As String)
+        Name = columnName
+    End Sub
+
     ''' <summary>
     ''' Specify the name of column in csv text.
     ''' </summary>
