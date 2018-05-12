@@ -82,7 +82,7 @@ Public Class CsvConvert
     Private Shared Function InputEntity(Of T As New)(line As String, columns() As CsvColumnInfo, separator As String) As T
         Dim lineContent = line.Split({separator}, StringSplitOptions.None)
         Dim entity As New T
-        For i = 0 To lineContent.Length - 1
+        For i = 0 To columns.Length - 1
             Dim col = columns(i)
             Dim data = lineContent(i)
             col(entity) = col.Formatter.Parse(data)
@@ -93,7 +93,7 @@ Public Class CsvConvert
     Private Shared Function InputEntity(Of T As New)(line As String, order As Integer(), columns() As CsvColumnInfo, separator As String) As T
         Dim lineContent = line.Split({separator}, StringSplitOptions.None)
         Dim entity As New T
-        For i = 0 To lineContent.Length - 1
+        For i = 0 To columns.Length - 1
             Dim col = columns(i)
             Dim data = lineContent(order(i))
             col(entity) = col.Formatter.Parse(data)

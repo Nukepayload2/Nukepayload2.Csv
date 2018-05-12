@@ -24,7 +24,13 @@ Public Class App
             Console.WriteLine("Csv file does not exist.")
             Return
         End If
-        Dim csv = File.ReadAllText(csvFilePath, System.Text.Encoding.GetEncoding(encoding)).Replace(vbCr, "").Split(vbLf, StringSplitOptions.RemoveEmptyEntries)
+        Dim enc As Text.Encoding
+        Try
+            enc = System.Text.Encoding.GetEncoding(encoding)
+        Catch ex As Exception
+            enc = System.Text.CodePagesEncodingProvider.Instance.GetEncoding(encoding)
+        End Try
+        Dim csv = File.ReadAllText(csvFilePath, enc).Replace(vbCr, "").Split(vbLf, StringSplitOptions.RemoveEmptyEntries)
         If csv.Length < 2 Then
             Console.WriteLine("Csv file is broken or encoding is not correct.")
             Return
@@ -41,7 +47,8 @@ Public Class App
         End Select
         Dim code = CodeGenerator.Create(lang)
         separator = Escape(separator)
-        Dim codeText = WriteCode(code, csv, separator)
+        Dim className = Path.GetFileNameWithoutExtension(csvFilePath)
+        Dim codeText = WriteCode(code, csv, separator, classname)
         File.WriteAllText(output, codeText)
         Console.WriteLine("Class generated.")
     End Sub
@@ -76,11 +83,11 @@ Public Class App
         Return name
     End Function
 
-    Private Function WriteCode(code As ICodeGenerator, csv() As String, separator As String) As String
+    Private Function WriteCode(code As ICodeGenerator, csv() As String, separator As String, className As String) As String
         Dim firstLine = csv(0)
         Dim headers = firstLine.Split({separator}, StringSplitOptions.RemoveEmptyEntries)
         Dim sb As New IndentStringBuilder
-        sb.IndentAppendLines(code.WriteClass("Model")).IncreaseIndent()
+        sb.IndentAppendLines(code.WriteClass(className)).IncreaseIndent()
         Dim inferredTypes = InferTypes(csv, separator, headers.Length)
         For i = 0 To headers.Length - 1
             Dim h = headers(i)
