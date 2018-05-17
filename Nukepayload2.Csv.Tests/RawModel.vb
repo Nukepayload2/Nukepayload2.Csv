@@ -4,4 +4,6 @@
     Public Property StringValue As String
     Public Property DateValue As Date
     Public Property BooleanValue As Boolean
+    Public Property SingleValue As Single
+    Public Property LongValue As Long
 End Class

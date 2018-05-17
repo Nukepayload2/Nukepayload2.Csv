@@ -2,9 +2,9 @@
 Imports System.Reflection
 
 Friend MustInherit Class CsvColumnInfo
-    Public Name As String, FormatString As String, Formatter As ITextTableDataFormatter
+    Public Name As String, FormatString As String, Formatter As ICsvDataFormatter
 
-    Public Sub New(name As String, formatString As String, formatter As ITextTableDataFormatter)
+    Public Sub New(name As String, formatString As String, formatter As ICsvDataFormatter)
         Me.Name = name
         Me.FormatString = formatString
         Me.Formatter = formatter
@@ -18,7 +18,7 @@ Friend Class CsvColumnInfo(Of T)
 
     Dim GetMethod As Func(Of T, Object), SetMethod As Action(Of T, Object)
 
-    Public Sub New(name As String, formatString As String, formatter As ITextTableDataFormatter, getMethod As MethodInfo, setMethod As MethodInfo)
+    Public Sub New(name As String, formatString As String, formatter As ICsvDataFormatter, getMethod As MethodInfo, setMethod As MethodInfo)
         MyBase.New(name, formatString, formatter)
 
         Me.GetMethod = CompileGetMethod(getMethod)

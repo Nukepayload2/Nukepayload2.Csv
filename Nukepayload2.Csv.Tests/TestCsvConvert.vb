@@ -25,14 +25,18 @@ Public Class TestCsvConvert
             .DateValue = Date.Now,
             .DoubleValue = 12345.123,
             .IntegerValue = -233,
-            .StringValue = "test string"
+            .StringValue = "test string",
+            .SingleValue = 123.13F,
+            .LongValue = 12345678901234567L
         },
         New RawModel With {
             .BooleanValue = False,
             .DateValue = Date.Now.AddDays(123),
             .DoubleValue = -12345.123,
             .IntegerValue = 0,
-            .StringValue = Nothing
+            .StringValue = Nothing,
+            .SingleValue = -123.13F,
+            .LongValue = -12345678901234567L
         }
     }
 
