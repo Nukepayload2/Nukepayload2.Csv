@@ -36,33 +36,33 @@ Public Class CsvConvert
         End If
         Dim columnType As Type = GetType(T)
         Dim columns = GetColumns(columnType)
-        If columns.Length = 0 Then
+        If columns.Length = 0 OrElse String.IsNullOrEmpty(text) Then
             Return Array.Empty(Of T)
         End If
+        ' TODO: Allocation can be reduced.
         Dim lines = text.Split(settings.NewLineSeparators, StringSplitOptions.RemoveEmptyEntries)
         If lines.Length < 2 Then
             Return Array.Empty(Of T)
         End If
         Dim head = lines(0)
-        Dim separator = settings.Separator
-        Dim entities As New List(Of T)
+        Dim separator = settings.Separators
+        Dim entities(lines.Length - 2) As T
         Select Case settings.ColumnOrderKind
             Case CsvColumnOrderKind.Auto
                 Dim order = GetHeadOrder(columns, head, separator)
                 For i = 1 To lines.Length - 1
-                    entities.Add(InputEntity(Of T)(lines(i), order, columns, separator))
+                    entities(i - 1) = InputEntity(Of T)(lines(i), order, columns, separator)
                 Next
             Case CsvColumnOrderKind.Sequential
                 For i = 1 To lines.Length - 1
-                    entities.Add(InputEntity(Of T)(lines(i), columns, separator))
+                    entities(i - 1) = InputEntity(Of T)(lines(i), columns, separator)
                 Next
             Case CsvColumnOrderKind.Explicit
                 Dim order = GetHeadOrderFor(Of T)()
                 For i = 1 To lines.Length - 1
-                    entities.Add(InputEntity(Of T)(lines(i), order, columns, separator))
+                    entities(i - 1) = InputEntity(Of T)(lines(i), order, columns, separator)
                 Next
         End Select
-        entities.TrimExcess()
         Return entities
     End Function
 
@@ -79,8 +79,9 @@ Public Class CsvConvert
         Return value
     End Function
 
-    Private Shared Function InputEntity(Of T As New)(line As String, columns() As CsvColumnInfo, separator As String) As T
-        Dim lineContent = line.Split({separator}, StringSplitOptions.None)
+    Private Shared Function InputEntity(Of T As New)(line As String, columns() As CsvColumnInfo, separator As String()) As T
+        ' TODO: Allocation can be reduced.
+        Dim lineContent = line.Split(separator, StringSplitOptions.None)
         Dim entity As New T
         For i = 0 To lineContent.Length - 1
             Dim col = columns(i)
@@ -90,19 +91,24 @@ Public Class CsvConvert
         Return entity
     End Function
 
-    Private Shared Function InputEntity(Of T As New)(line As String, order As Integer(), columns() As CsvColumnInfo, separator As String) As T
-        Dim lineContent = line.Split({separator}, StringSplitOptions.None)
+    Private Shared Function InputEntity(Of T As New)(line As String, order As Integer(), columns() As CsvColumnInfo, separator As String()) As T
+        ' TODO: Allocation can be reduced.
+        Dim lineContent = line.Split(separator, StringSplitOptions.None)
         Dim entity As New T
         For i = 0 To lineContent.Length - 1
             Dim col = columns(i)
             Dim data = lineContent(order(i))
+            ' The slowest part.
+            ' TODO: Numbers should be parsed in a more effective way
+            ' since we do not support NumberStyles and IFormatProvider.
             col(entity) = col.Formatter.Parse(data)
         Next
         Return entity
     End Function
 
-    Private Shared Function GetHeadOrder(columns() As CsvColumnInfo, head As String, separator As String) As Integer()
-        Dim lineNames = head.Split({separator}, StringSplitOptions.None)
+    Private Shared Function GetHeadOrder(columns() As CsvColumnInfo, head As String, separator As String()) As Integer()
+        ' TODO: Allocation can be reduced.
+        Dim lineNames = head.Split(separator, StringSplitOptions.None)
         If lineNames.Length <> columns.Length Then
             ThrowForColumnNotFound(columns, lineNames)
         End If
@@ -156,7 +162,7 @@ Public Class CsvConvert
         Dim columnType As Type = GetType(T)
         Dim columns = GetColumns(columnType)
         Dim columnLength As Integer = columns.Length
-        If columnLength = 0 Then
+        If columnLength = 0 OrElse objs Is Nothing Then
             Return String.Empty
         End If
         Dim separator = settings.Separator
@@ -182,6 +188,8 @@ Public Class CsvConvert
                             Dim obj = roList(i)
                             Dim col = columns(order(j))
                             Dim value = col(obj)
+                            ' The slowest part.
+                            ' TODO: If FormatString = Nothing, numbers should be written in a optimized way.
                             col.Formatter.WriteTo(value, col.FormatString, sb)
                             sb.Append(separator)
                         Next
@@ -242,18 +250,24 @@ Public Class CsvConvert
         Next
     End Function
 
-    Private Shared Function GetColumns(columnType As Type) As CsvColumnInfo()
+    Private Shared Function GetColumns(modelType As Type) As CsvColumnInfo()
         Dim value As CsvColumnInfo() = Nothing
-        If Not s_cachedColumns.TryGetValue(columnType, value) Then
-            value = Aggregate prop In columnType.GetRuntimeProperties
+        If Not s_cachedColumns.TryGetValue(modelType, value) Then
+            value = Aggregate prop In modelType.GetRuntimeProperties
                     Where prop.CanRead AndAlso prop.GetMethod.IsPublic
                     Let formatInfo = prop.GetCustomAttribute(Of ColumnFormatAttribute)
-                    Select New CsvColumnInfo(If(formatInfo?.Name, prop.Name),
-                           formatInfo?.FormatString,
-                           prop.PropertyType.GetFormatter,
-                           prop.GetMethod, prop.SetMethod) Into ToArray
-            s_cachedColumns.Add(columnType, value)
+                    Select CreateCsvColumnInfo(prop, formatInfo, modelType) Into ToArray
+            s_cachedColumns.Add(modelType, value)
         End If
         Return value
+    End Function
+
+    Private Shared Function CreateCsvColumnInfo(prop As PropertyInfo, formatInfo As ColumnFormatAttribute, modelType As Type) As CsvColumnInfo
+        Dim instance = Activator.CreateInstance(GetType(CsvColumnInfo(Of)).MakeGenericType(modelType),
+                                   If(formatInfo?.Name, prop.Name),
+                                   formatInfo?.FormatString,
+                                   prop.PropertyType.GetFormatter,
+                                   prop.GetMethod, prop.SetMethod)
+        Return DirectCast(instance, CsvColumnInfo)
     End Function
 End Class

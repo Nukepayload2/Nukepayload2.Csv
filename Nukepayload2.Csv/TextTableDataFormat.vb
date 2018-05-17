@@ -1,6 +1,5 @@
 ﻿Imports System.Runtime.CompilerServices
 Imports System.Text
-Imports Nukepayload2.Csv
 
 Friend Interface ITextTableDataFormatter
     Sub WriteTo(data As Object, format As String, sb As StringBuilder)

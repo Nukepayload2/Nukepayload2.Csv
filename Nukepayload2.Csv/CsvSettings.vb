@@ -3,10 +3,25 @@
 ''' </summary>
 Public Class CsvSettings
     Private _NewLine As String = Environment.NewLine
+    Private _Separator As String = ","
+
     ''' <summary>
     ''' The separator of csv. The default value is ",".
     ''' </summary>
-    Public Property Separator As String = ","
+    Public Property Separator As String
+        Get
+            Return _Separator
+        End Get
+        Set
+            _Separator = Value
+            _Separators = {Value}
+        End Set
+    End Property
+
+    ''' <summary>
+    ''' The separator of csv. The default value is ",".
+    ''' </summary>
+    Friend ReadOnly Property Separators As String() = {","}
     ''' <summary>
     ''' The new line of csv. The default value is <see cref="Environment.NewLine"/>.
     ''' </summary>
