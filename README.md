@@ -72,6 +72,10 @@ __C#__
 csv = CsvConvert.SerializeObject(converted);
 ```
 
+### Trouble shooting
+If these sample codes throw `FormatException` when deserializing, please set the current culture of the current thread to "zh-CN".
+Because I'm using Chinese date time format when writing this sample.
+
 ## What is next?
 - [Testing] VB and C# model class generator will be added.
 - [Pending] Performance improvements (waiting for `ref struct` support in VB) https://github.com/dotnet/vblang/issues/297 .
