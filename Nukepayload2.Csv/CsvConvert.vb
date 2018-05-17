@@ -83,7 +83,7 @@ Public Class CsvConvert
         ' TODO: Allocation can be reduced.
         Dim lineContent = line.Split(separator, StringSplitOptions.None)
         Dim entity As New T
-        For i = 0 To lineContent.Length - 1
+        For i = 0 To columns.Length - 1
             Dim col = columns(i)
             Dim data = lineContent(i)
             col(entity) = col.Formatter.Parse(data)
@@ -95,7 +95,7 @@ Public Class CsvConvert
         ' TODO: Allocation can be reduced.
         Dim lineContent = line.Split(separator, StringSplitOptions.None)
         Dim entity As New T
-        For i = 0 To lineContent.Length - 1
+        For i = 0 To columns.Length - 1
             Dim col = columns(i)
             Dim data = lineContent(order(i))
             ' The slowest part.
