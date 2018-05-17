@@ -1,6 +1,14 @@
 # Nukepayload2.Csv
 Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter.
 
+Supported types in csv columns:
+- System.String
+- System.DateTime
+- System.Int32
+- System.Int64
+- System.Single
+- System.Double
+
 __Get on Nuget__
 
 https://www.nuget.org/packages/Nukepayload2.Csv
@@ -65,12 +73,20 @@ csv = CsvConvert.SerializeObject(converted);
 ```
 
 ## What is next?
-- VB and C# model class generator will be added.
-- Performance improvements.
+- [Testing] VB and C# model class generator will be added.
+- [Pending] Performance improvements (waiting for `ref struct` support in VB) https://github.com/dotnet/vblang/issues/297 .
 
 # Nukepayload2.Csv 中文介绍
 
 Nukepayload2.Csv 是一个跨平台的 Csv 字符串 &lt;==&gt; .NET 对象转换器。
+
+在 csv 每一列中支持的数据类型:
+- System.String
+- System.DateTime
+- System.Int32
+- System.Int64
+- System.Single
+- System.Double
 
 __在 Nuget 下载__
 
@@ -134,5 +150,5 @@ csv = CsvConvert.SerializeObject(converted);
 ```
 
 ## 下一步的计划?
-- 将添加 VB 和 C# 的模型类生成器。
-- 提升性能。
+- [测试中] 将添加 VB 和 C# 的模型类生成器。
+- [挂起] 提升性能 （等 `ref struct` 在 VB 能用了再说） https://github.com/dotnet/vblang/issues/297 。

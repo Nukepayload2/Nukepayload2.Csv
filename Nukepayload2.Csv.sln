@@ -7,7 +7,13 @@ Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "Nukepayload2.Csv", "Nukepay
 EndProject
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "Nukepayload2.Csv.Tests", "Nukepayload2.Csv.Tests\Nukepayload2.Csv.Tests.vbproj", "{FA08EB83-2D3A-4C14-99B1-FA01A6175E49}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Nukepayload2.Csv.ModelGenerator", "Nukepayload2.Csv.ModelGenerator\Nukepayload2.Csv.ModelGenerator.vbproj", "{4C5F6471-21D2-4940-AF88-D56F93D2A425}"
+Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "Nukepayload2.Csv.ModelGenerator", "Nukepayload2.Csv.ModelGenerator\Nukepayload2.Csv.ModelGenerator.vbproj", "{4C5F6471-21D2-4940-AF88-D56F93D2A425}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EDEE1FD4-2960-480A-8300-6FDE395D071E}"
+	ProjectSection(SolutionItems) = preProject
+		History.md = History.md
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

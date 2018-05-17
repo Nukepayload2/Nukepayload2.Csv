@@ -9,24 +9,34 @@
     <RepositoryUrl>https://github.com/Nukepayload2/Nukepayload2.Csv.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>csv, formatter, serializer, converter, vb, netstandard</PackageTags>
-    <PackageReleaseNotes>Initial commit.</PackageReleaseNotes>
+    <PackageReleaseNotes>Improved performance for huge csv strings.</PackageReleaseNotes>
     <Description>Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter.
 Commonly Used members:
 Nukepayload2.Csv.CsvConvert.SerializeObject
-Nukepayload2.Csv.CsvConvert.DeserializeObject</Description>
-    <Version>1.0.1</Version>
+Nukepayload2.Csv.CsvConvert.DeserializeObject
+Supported types in csv columns:
+System.String
+System.DateTime
+System.Int32
+System.Int64
+System.Single
+System.Double</Description>
+    <Version>1.1.0</Version>
     <PackageProjectUrl>https://github.com/Nukepayload2/Nukepayload2.Csv</PackageProjectUrl>
     <OptionStrict>On</OptionStrict>
+    <PackageLicenseUrl>https://github.com/Nukepayload2/Nukepayload2.Csv/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <NoWarn />
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
+    <DocumentationFile>Nukepayload2.Csv.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn />
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
+    <DocumentationFile>Nukepayload2.Csv.xml</DocumentationFile>
   </PropertyGroup>
 
 </Project>
