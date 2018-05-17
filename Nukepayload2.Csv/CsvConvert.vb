@@ -108,7 +108,7 @@ Public Class CsvConvert
 
     Private Shared Function GetHeadOrder(columns() As CsvColumnInfo, head As String, separator As String()) As Integer()
         ' TODO: Allocation can be reduced.
-        Dim lineNames = head.Split(separator, StringSplitOptions.None)
+        Dim lineNames = head.Split(separator, StringSplitOptions.RemoveEmptyEntries)
         If lineNames.Length <> columns.Length Then
             ThrowForColumnNotFound(columns, lineNames)
         End If
