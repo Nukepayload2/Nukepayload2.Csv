@@ -16,7 +16,9 @@ Public Class App
                        <Display(ShortName:="e", Description:="The encoding of csv file. The default value is UTF-8.")>
                        Optional encoding As String = "UTF-8",
                        <Display(ShortName:="s", Description:="The separator in csv file. The default value is ','. Escape rules: {Space} for space, {Tab} for tab.")>
-                       Optional separator As String = ",")
+                       Optional separator As String = ",",
+                       <Display(ShortName:="n", Description:="The new line characters in csv file. The default value is Environment.NewLine. Escape rules: {Cr} for Mac default new line, {Lf} for Linux default new line, {CrLf} for Windows default new line.")>
+                       Optional newLine As String = ",")
         Console.WriteLine("Csv model class file generator")
         Console.WriteLine("Copyright 2018 Nukepayload2")
         Console.WriteLine("For more information, see https://github.com/Nukepayload2/Nukepayload2.Csv")
@@ -30,7 +32,12 @@ Public Class App
         Catch ex As Exception
             enc = System.Text.CodePagesEncodingProvider.Instance.GetEncoding(encoding)
         End Try
-        Dim csv = File.ReadAllText(csvFilePath, enc).Replace(vbCr, "").Split(vbLf, StringSplitOptions.RemoveEmptyEntries)
+        If String.IsNullOrEmpty(newLine) Then
+            newLine = Environment.NewLine
+        Else
+            newLine = newLine.Replace("{CrLf}", vbCrLf).Replace("{Cr}", vbCr).Replace("{Lf}", vbLf)
+        End If
+        Dim csv = File.ReadAllText(csvFilePath, enc).Split(newLine, StringSplitOptions.RemoveEmptyEntries)
         If csv.Length < 2 Then
             Console.WriteLine("Csv file is broken or encoding is not correct.")
             Return
@@ -47,8 +54,8 @@ Public Class App
         End Select
         Dim code = CodeGenerator.Create(lang)
         separator = Escape(separator)
-        Dim className = Path.GetFileNameWithoutExtension(csvFilePath)
-        Dim codeText = WriteCode(code, csv, separator, classname)
+        Dim className = Path.GetFileNameWithoutExtension(output)
+        Dim codeText = WriteCode(code, csv, separator, className)
         File.WriteAllText(output, codeText)
         Console.WriteLine("Class generated.")
     End Sub
@@ -87,6 +94,7 @@ Public Class App
         Dim firstLine = csv(0)
         Dim headers = firstLine.Split({separator}, StringSplitOptions.RemoveEmptyEntries)
         Dim sb As New IndentStringBuilder
+        sb.IndentAppendLine(code.WriteImport("Nukepayload2.Csv")).AppendLine()
         sb.IndentAppendLines(code.WriteClass(className)).IncreaseIndent()
         Dim inferredTypes = InferTypes(csv, separator, headers.Length)
         For i = 0 To headers.Length - 1
@@ -100,10 +108,12 @@ Public Class App
 
     Private Function InferTypes(csv() As String, separator As String, resultLength As Integer) As Type()
         ' decision:
-        ' Integer - Double - DateTime - Boolean - String
+        ' Integer - Long - Single - Double - DateTime - Boolean - String
         Dim defaultDecision As Type = GetType(String)
-        Dim selectors = {(Decision:=GetType(Integer), Decide:=Function(str$) str.IsInteger),
-            (Decision:=GetType(Double), Decide:=Function(str$) str.IsFraction),
+        Dim selectors = {(Decision:=GetType(Integer), Decide:=Function(str$) str.IsInteger AndAlso Integer.TryParse(str, Nothing)),
+            (Decision:=GetType(Long), Decide:=Function(str$) str.IsInteger AndAlso Long.TryParse(str, Nothing)),
+            (Decision:=GetType(Single), Decide:=Function(str$) str.IsFraction AndAlso Single.TryParse(str, Nothing)),
+            (Decision:=GetType(Double), Decide:=Function(str$) str.IsFraction AndAlso Double.TryParse(str, Nothing)),
             (Decision:=GetType(Date), Decide:=Function(str$) str.IsDateTime),
             (Decision:=GetType(Boolean), Decide:=Function(str$) str.IsBoolean)
         }
@@ -121,7 +131,7 @@ Public Class App
             Do While selectorIndex < selectors.Length
                 Dim curSelector = selectors(selectorIndex)
                 For i = 0 To csv.Length - 2
-                    If Not curSelector.Decide(groups(typeIndex, selectorIndex)) Then
+                    If Not curSelector.Decide(groups(typeIndex, i)) Then
                         selectorIndex += 1
                         Continue Do
                     End If
