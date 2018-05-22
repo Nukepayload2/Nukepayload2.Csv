@@ -9,7 +9,7 @@
     <RepositoryUrl>https://github.com/Nukepayload2/Nukepayload2.Csv.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>csv, formatter, serializer, converter, vb, netstandard</PackageTags>
-    <PackageReleaseNotes>Improved performance for huge csv strings.</PackageReleaseNotes>
+    <PackageReleaseNotes>Allowed custom record formatters and parsers.</PackageReleaseNotes>
     <Description>Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter.
 Commonly Used members:
 Nukepayload2.Csv.CsvConvert.SerializeObject
@@ -20,8 +20,10 @@ System.DateTime
 System.Int32
 System.Int64
 System.Single
-System.Double</Description>
-    <Version>1.1.0</Version>
+System.Double
+System.Boolean
+NOTE: Please don't forget to add the "Code Generation" capability if you are using this package in a UWP project. If JIT is not allowed, both serialization and deserialization could be much slower than expected.</Description>
+    <Version>1.2.0</Version>
     <PackageProjectUrl>https://github.com/Nukepayload2/Nukepayload2.Csv</PackageProjectUrl>
     <OptionStrict>On</OptionStrict>
     <PackageLicenseUrl>https://github.com/Nukepayload2/Nukepayload2.Csv/blob/master/LICENSE</PackageLicenseUrl>

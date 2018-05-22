@@ -8,6 +8,14 @@ Public Class CsvConvert
     Private Shared s_cachedHeaderOrder As New Dictionary(Of Type, Integer())
 
     ''' <summary>
+    ''' Release cached column information of processed model types. If you don't know the consequences, please do not call it.
+    ''' </summary>
+    Public Shared Sub ReleaseCache()
+        s_cachedColumns.Clear()
+        s_cachedHeaderOrder.Clear()
+    End Sub
+
+    ''' <summary>
     ''' Deserialize the specified csv text to .NET collection.
     ''' </summary>
     ''' <typeparam name="T">The sub type of the collection.</typeparam>
@@ -35,7 +43,7 @@ Public Class CsvConvert
             settings = CsvSettings.Default
         End If
         Dim columnType As Type = GetType(T)
-        Dim columns = GetColumns(columnType)
+        Dim columns = GetColumns(columnType, settings.RecordFormatterCache)
         If columns.Length = 0 OrElse String.IsNullOrEmpty(text) Then
             Return Array.Empty(Of T)
         End If
@@ -160,7 +168,7 @@ Public Class CsvConvert
             settings = CsvSettings.Default
         End If
         Dim columnType As Type = GetType(T)
-        Dim columns = GetColumns(columnType)
+        Dim columns = GetColumns(columnType, settings.RecordFormatterCache)
         Dim columnLength As Integer = columns.Length
         If columnLength = 0 OrElse objs Is Nothing Then
             Return String.Empty
@@ -250,23 +258,23 @@ Public Class CsvConvert
         Next
     End Function
 
-    Private Shared Function GetColumns(modelType As Type) As CsvColumnInfo()
+    Private Shared Function GetColumns(modelType As Type, formatterCache As ICsvRecordFormatterCache) As CsvColumnInfo()
         Dim value As CsvColumnInfo() = Nothing
         If Not s_cachedColumns.TryGetValue(modelType, value) Then
             value = Aggregate prop In modelType.GetRuntimeProperties
                     Where prop.CanRead AndAlso prop.GetMethod.IsPublic
                     Let formatInfo = prop.GetCustomAttribute(Of ColumnFormatAttribute)
-                    Select CreateCsvColumnInfo(prop, formatInfo, modelType) Into ToArray
+                    Select CreateCsvColumnInfo(prop, formatInfo, modelType, formatterCache) Into ToArray
             s_cachedColumns.Add(modelType, value)
         End If
         Return value
     End Function
 
-    Private Shared Function CreateCsvColumnInfo(prop As PropertyInfo, formatInfo As ColumnFormatAttribute, modelType As Type) As CsvColumnInfo
+    Private Shared Function CreateCsvColumnInfo(prop As PropertyInfo, formatInfo As ColumnFormatAttribute, modelType As Type, formatterCache As ICsvRecordFormatterCache) As CsvColumnInfo
         Dim instance = Activator.CreateInstance(GetType(CsvColumnInfo(Of)).MakeGenericType(modelType),
                                    If(formatInfo?.Name, prop.Name),
                                    formatInfo?.FormatString,
-                                   prop.PropertyType.GetFormatter,
+                                   prop.PropertyType.GetFormatter(formatterCache),
                                    prop.GetMethod, prop.SetMethod)
         Return DirectCast(instance, CsvColumnInfo)
     End Function

@@ -46,6 +46,10 @@ Public Class CsvSettings
     ''' Get the default instance of CsvSettings. Any modifications to this object will affect default behaviors of <see cref="CsvConvert.DeserializeObject(Of T)(String)"/> and <see cref="CsvConvert.SerializeObject(Of T)(IEnumerable(Of T))"/> .
     ''' </summary>
     Public Shared ReadOnly Property [Default] As New CsvSettings
+    ''' <summary>
+    ''' Get or set the record formatter cache which is used to get and cache instance of record formatters.
+    ''' </summary>
+    Public Property RecordFormatterCache As ICsvRecordFormatterCache = New DefaultFormatterCache
 End Class
 
 ''' <summary>

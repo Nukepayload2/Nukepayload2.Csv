@@ -3,17 +3,17 @@ Imports System.Text
 
 Friend Class CsvDateFormatter
     Inherits Singleton(Of CsvDateFormatter)
-    Implements ICsvDataFormatter
+    Implements ICsvRecordFormatter
 
-    Public Sub WriteTo(data As Object, format As String, sb As StringBuilder) Implements ICsvDataFormatter.WriteTo
+    Public Sub WriteTo(data As Object, format As String, sb As StringBuilder) Implements ICsvRecordFormatter.WriteTo
         sb.Append(DirectCast(data, Date).ToString(format))
     End Sub
 
-    Public Function Parse(text As String) As Object Implements ICsvDataFormatter.Parse
+    Public Function Parse(text As String) As Object Implements ICsvRecordFormatter.Parse
         Return Date.Parse(text)
     End Function
 
-    Public Function GetString(data As Object, format As String) As String Implements ICsvDataFormatter.GetString
+    Public Function GetString(data As Object, format As String) As String Implements ICsvRecordFormatter.GetString
         Return DirectCast(data, Date).ToString(format)
     End Function
 End Class
