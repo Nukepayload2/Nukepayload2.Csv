@@ -15,4 +15,9 @@ Friend Class CsvSingleFormatter
     Public Function GetString(data As Object, format As String) As String Implements ICsvRecordFormatter.GetString
         Return DirectCast(data, Single).ToString(format)
     End Function
+
+    Public Function ParseBlittablePrimitive(text As String, ByRef primitive As CsvBlittablePrimitive) As Boolean Implements ICsvRecordFormatter.ParseBlittablePrimitive
+        primitive.SingleValue = Single.Parse(text)
+        Return True
+    End Function
 End Class

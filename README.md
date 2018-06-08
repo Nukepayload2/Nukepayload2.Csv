@@ -76,9 +76,20 @@ csv = CsvConvert.SerializeObject(converted);
 If these sample codes throw `FormatException` when deserializing, please set the current culture of the current thread to "zh-CN".
 Because I'm using Chinese date time format when writing this sample.
 
+## VB and C# model Code generator (Preview)
+1. Clone this repo.
+2. Make sure .NET Core 2.x SDK is installed.
+3. Open cmd or bash in cloned code's root directory.
+4. Go the ModelGenerator directory `cd Nukepayload2.Csv.ModelGenerator`
+5. Build the project `dotnet build Nukepayload2.Csv.ModelGenerator.vbproj`
+6. To see help, execute `dotnet run bin\Debug\netcoreapp2.0\Nukepayload2.Csv.ModelGenerator.dll` (Change \ to / on Linux) .
+
 ## What is next?
-- [Testing] VB and C# model class generator will be added.
-- [Pending] Performance improvements (waiting for `ref struct` support in VB) https://github.com/dotnet/vblang/issues/297 .
+- [Prototyping] Excel flavored csv escape support.
+- [Prototyping] Add shortcut for Int32, Int64, Single and Double since they are frequently used in csv.
+- [Pending] Lower allocation (waiting for `ref struct` support in VB) https://github.com/dotnet/vblang/issues/297 .
+- [Pending] Column-oriented storage for loading huge csv file.
+- [Pending] Excel flavored number parser (Parsing OADate is not planned).
 
 # Nukepayload2.Csv 中文介绍
 
@@ -153,6 +164,17 @@ __C#__
 csv = CsvConvert.SerializeObject(converted);
 ```
 
+## VB 和 C# 模型代码生成器（预览）
+1. 克隆此仓库.
+2. 确保 .NET Core 2.x SDK 安装了.
+3. 在克隆后的代码根目录打开 cmd 或者 bash.
+4. 进入生成器的目录 `cd Nukepayload2.Csv.ModelGenerator`
+5. 编译 `dotnet build Nukepayload2.Csv.ModelGenerator.vbproj`
+6. 执行命令查看查看帮助 `dotnet run bin\Debug\netcoreapp2.0\Nukepayload2.Csv.ModelGenerator.dll` (Linux 上把 \ 改成 /) .
+
 ## 下一步的计划?
-- [测试中] 将添加 VB 和 C# 的模型类生成器。
-- [挂起] 提升性能 （等 `ref struct` 在 VB 能用了再说） https://github.com/dotnet/vblang/issues/297 。
+- [做原型] 支持 Excel 风格的 Csv 转义。
+- [做原型] 为常用的 Int32, Int64, Single 和 Double 提供快捷路径。
+- [挂起] 减少内存分配 （等 `ref struct` 在 VB 能用了再说） https://github.com/dotnet/vblang/issues/297 。
+- [挂起] 为大型 Csv 准备的列式存储。
+- [挂起] Excel 风格的数字解析（日期格式不考虑）。

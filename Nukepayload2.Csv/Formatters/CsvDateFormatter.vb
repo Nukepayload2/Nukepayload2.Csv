@@ -1,5 +1,4 @@
-﻿Imports System.Globalization
-Imports System.Text
+﻿Imports System.Text
 
 Friend Class CsvDateFormatter
     Inherits Singleton(Of CsvDateFormatter)
@@ -15,5 +14,9 @@ Friend Class CsvDateFormatter
 
     Public Function GetString(data As Object, format As String) As String Implements ICsvRecordFormatter.GetString
         Return DirectCast(data, Date).ToString(format)
+    End Function
+
+    Public Function ParseBlittablePrimitive(text As String, ByRef primitive As CsvBlittablePrimitive) As Boolean Implements ICsvRecordFormatter.ParseBlittablePrimitive
+        Return False
     End Function
 End Class
