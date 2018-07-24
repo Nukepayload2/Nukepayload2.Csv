@@ -1,13 +1,32 @@
 # Nukepayload2.Csv
 Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter.
 
-Supported types in csv columns:
+## Supported types in csv columns:
 - System.String
 - System.DateTime
 - System.Int32
 - System.Int64
 - System.Single
 - System.Double
+- System.Boolean
+
+## Feature status
+
+|Feature|IsSupported|
+|-|-|
+|Custom line separator|True|
+|Custom column separator|True|
+|Custom csv layout|True|
+|Csv String to Objects|True|
+|Objects to Csv String|True|
+|Escape characters|False|
+|Custom format string for output|True|
+|Custom format string for input|False|
+|Csv UTF-8 Stream to Objects|False|
+|Objects to UTF-8 Stream|False|
+|Column oriented and Sparse storage|False|
+|Excel number parser compatibility|Partial|
+|Excel formula compatibility|False|
 
 __Get on Nuget__
 
@@ -86,10 +105,10 @@ Because I'm using Chinese date time format when writing this sample.
 
 ## What is next?
 - [Prototyping] Excel flavored csv escape support.
-- [Prototyping] Add shortcut for Int32, Int64, Single and Double since they are frequently used in csv.
 - [Pending] Lower allocation (waiting for `ref struct` support in VB) https://github.com/dotnet/vblang/issues/297 .
 - [Pending] Column-oriented storage for loading huge csv file.
 - [Pending] Excel flavored number parser (Parsing OADate is not planned).
+- [Pending] Optimize getter and setter for Int32, Int64, Single and Double since they are frequently used in csv.
 
 # Nukepayload2.Csv 中文介绍
 
@@ -102,6 +121,24 @@ Nukepayload2.Csv 是一个跨平台的 Csv 字符串 &lt;==&gt; .NET 对象转�
 - System.Int64
 - System.Single
 - System.Double
+
+## 功能状态
+
+|功能|是否支持|
+|-|-|
+|自定义行分隔符|是|
+|自定义列分隔符|是|
+|自定义 CSV 布局|是|
+|字符串到对象转换|是|
+|对象到字符串转换|是|
+|转义字符|否|
+|自定义输出格式字符串|是|
+|自定义输入格式字符串|否|
+|UTF-8 流到对象|否|
+|对象 to UTF-8 流|否|
+|列式存储和稀疏存储|否|
+|Excel 数字转换器兼容|部分|
+|Excel 公式兼容|否|
 
 __在 Nuget 下载__
 
@@ -174,7 +211,7 @@ csv = CsvConvert.SerializeObject(converted);
 
 ## 下一步的计划?
 - [做原型] 支持 Excel 风格的 Csv 转义。
-- [做原型] 为常用的 Int32, Int64, Single 和 Double 提供快捷路径。
 - [挂起] 减少内存分配 （等 `ref struct` 在 VB 能用了再说） https://github.com/dotnet/vblang/issues/297 。
 - [挂起] 为大型 Csv 准备的列式存储。
 - [挂起] Excel 风格的数字解析（日期格式不考虑）。
+- [挂起] 为常用的 Int32, Int64, Single 和 Double 提供读写性能优化。

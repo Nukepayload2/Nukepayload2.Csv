@@ -9,7 +9,10 @@ Friend Class CsvBooleanFormatter
     End Sub
 
     Public Function Parse(text As String) As Object Implements ICsvRecordFormatter.Parse
-        Return Boolean.Parse(text)
+        If text Is Nothing Then
+            Throw New FormatException("Boolean expected.")
+        End If
+        Return text.Equals("True", StringComparison.OrdinalIgnoreCase)
     End Function
 
     Public Function GetString(data As Object, format As String) As String Implements ICsvRecordFormatter.GetString

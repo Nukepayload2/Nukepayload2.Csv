@@ -50,6 +50,10 @@ Public Class CsvSettings
     ''' Get or set the record formatter cache which is used to get and cache instance of record formatters.
     ''' </summary>
     Public Property RecordFormatterCache As ICsvRecordFormatterCache = New DefaultFormatterCache
+    ''' <summary>
+    ''' Indicates whether the csv parser and formatter escape strings. The default value is <see langword="True"/>. This property is used for versioning.
+    ''' </summary>
+    Public Property IsEscapeEnabled As Boolean
 End Class
 
 ''' <summary>
@@ -57,7 +61,7 @@ End Class
 ''' </summary>
 Public Enum CsvColumnOrderKind
     ''' <summary>
-    ''' The column order of csv must be inferred at runtime. (Slowest when columns have large quantity, use this mode when csv text is less than )
+    ''' The column order of csv must be inferred at runtime. (Slowest when columns have large quantity)
     ''' </summary>
     Auto
     ''' <summary>
