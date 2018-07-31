@@ -12,9 +12,12 @@ Public Class CsvSettings
         Get
             Return _Separator
         End Get
-        Set
-            _Separator = Value
-            _Separators = {Value}
+        Set(value As String)
+            If String.IsNullOrEmpty(value) OrElse value.Contains("""") Then
+                Throw New InvalidOperationException("Separator can't be set to empty or contains quote.")
+            End If
+            _Separator = value
+            _Separators = {value}
         End Set
     End Property
 
@@ -30,6 +33,12 @@ Public Class CsvSettings
             Return _NewLine
         End Get
         Set(value As String)
+            If String.IsNullOrEmpty(value) Then
+                Throw New InvalidOperationException("NewLine can't be set to empty.")
+            End If
+            If Aggregate s In value Where s <> ChrW(10) AndAlso s <> ChrW(13) Into Any Then
+                Throw New InvalidOperationException("NewLine can't contain characters other than CR and LF.")
+            End If
             _NewLine = value
             _NewLineSeparators = {value}
         End Set
@@ -50,10 +59,6 @@ Public Class CsvSettings
     ''' Get or set the record formatter cache which is used to get and cache instance of record formatters.
     ''' </summary>
     Public Property RecordFormatterCache As ICsvRecordFormatterCache = New DefaultFormatterCache
-    ''' <summary>
-    ''' Indicates whether the csv parser and formatter escape strings. The default value is <see langword="True"/>. This property is used for versioning.
-    ''' </summary>
-    Public Property IsEscapeEnabled As Boolean
 End Class
 
 ''' <summary>
