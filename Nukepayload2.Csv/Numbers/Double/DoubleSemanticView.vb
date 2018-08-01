@@ -163,8 +163,7 @@
                             Exit Select
                         End If
                         GoTo CaseElse
-                    Case Else
-CaseElse:
+CaseElse:           Case Else
                         Dim success = syntaxTree.Children.TryAdd(New SyntaxNode(curSyntax, curRange))
                         If Not success Then
                             Return False
@@ -262,8 +261,7 @@ CaseElse:
                         Return False
                     End If
                     GoTo PlainNumber
-                Case NumberKind.PlainNumber
-PlainNumber:
+PlainNumber:    Case NumberKind.PlainNumber
                     If syntax.HasParen Then
                         If syntax.Children.Count < 3 Then
                             Return False

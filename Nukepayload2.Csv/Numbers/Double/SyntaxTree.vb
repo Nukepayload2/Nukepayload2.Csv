@@ -1,6 +1,4 @@
-﻿Imports Nukepayload2.Buffers.Fixed
-
-Namespace Numbers.Double
+﻿Namespace Numbers.Double
     Friend Structure SyntaxTree
         Public Children As FixedList32(Of SyntaxNode)
         Public Text As String

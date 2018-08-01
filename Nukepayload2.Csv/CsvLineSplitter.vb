@@ -1,8 +1,11 @@
-﻿Friend Class CsvLineSplitter
+﻿Imports System.Runtime.CompilerServices
+
+Friend Module CsvLineSplitter
     Private Const QuoteChar = """"c
     Private Const DoubleQuote As String = """"""
     Private Const SingleQuote As String = """"
 
+    <Extension>
     Public Sub SplitInto(text As String, separator As String, result As String(), options As StringSplitOptions)
         Debug.Assert(text <> Nothing, "Text can't be empty.")
         Debug.Assert(separator <> Nothing, "Separator can't be empty.")
@@ -41,7 +44,7 @@
                         If curChr = separatorStart Then
                             If separator.Length + i <= text.Length Then
                                 If IsSeparator(text, separator, i) Then
-                                    result(resultIndex) = text.Substring(recordStart, i - recordStart + 1)
+                                    result(resultIndex) = text.Substring(recordStart, i - recordStart)
                                     status = CsvLineSplitStatus.Separator
                                     Continue While
                                 End If
@@ -57,6 +60,7 @@
                     ' Separators will be ignored.
                     ' Record ends with a single quote or EOF.
                     ' Quotes will be escaped with the rule of Visual Basic.
+                    i += 1
                     recordStart += 1
                     Dim escapeSuspected = False
                     Do While i < text.Length
@@ -65,17 +69,22 @@
                             escapeSuspected = Not escapeSuspected
                         ElseIf escapeSuspected Then
                             If curChr = separatorStart Then
-                                result(resultIndex) = text.Substring(recordStart, i - recordStart + 1).Replace(DoubleQuote, SingleQuote)
+                                result(resultIndex) = text.Substring(recordStart, i - 1 - recordStart).Replace(DoubleQuote, SingleQuote)
                                 status = CsvLineSplitStatus.Separator
                                 Continue While
                             Else
                                 Throw New FormatException("Invalid character after quote.")
                             End If
-                        Else
-                            i += 1
                         End If
+                        i += 1
                     Loop
-                    Throw New FormatException("Missing the quote character at the end of line.")
+                    If escapeSuspected Then
+                        result(resultIndex) = text.Substring(recordStart, i - 1 - recordStart).Replace(DoubleQuote, SingleQuote)
+                        recordStart = i
+                        Exit While
+                    Else
+                        Throw New FormatException("Missing the quote character at the end of line.")
+                    End If
                 Case CsvLineSplitStatus.Separator
                     If options = StringSplitOptions.None Then
                         If result(resultIndex) Is Nothing Then
@@ -102,10 +111,10 @@
         End If
     End Sub
 
-    Private Shared Function IsSeparator(text As String, separator As String, ByRef i As Integer) As Boolean
+    Private Function IsSeparator(text As String, separator As String, ByRef i As Integer) As Boolean
         For j = 1 To separator.Length - 1
             Dim ch = text(i + j)
-            Dim sp = separator(i)
+            Dim sp = separator(j)
             If ch <> sp Then
                 i = j
                 Return False
@@ -113,7 +122,7 @@
         Next
         Return True
     End Function
-End Class
+End Module
 
 Friend Enum CsvLineSplitStatus
     Unknown
