@@ -26,7 +26,7 @@ System.Single
 System.Double
 System.Boolean
 NOTE: Please don't forget to add the "Code Generation" capability if you are using this package in a UWP project. If JIT is not allowed, both serialization and deserialization could be much slower than expected.</Description>
-    <Version>1.2.0</Version>
+    <Version>1.3.0</Version>
     <PackageProjectUrl>https://github.com/Nukepayload2/Nukepayload2.Csv</PackageProjectUrl>
     <OptionStrict>On</OptionStrict>
     <PackageLicenseUrl>https://github.com/Nukepayload2/Nukepayload2.Csv/blob/master/LICENSE</PackageLicenseUrl>
