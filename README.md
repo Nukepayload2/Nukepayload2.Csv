@@ -19,7 +19,7 @@ Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter
 |Custom csv layout|True|
 |Csv String to Objects|True|
 |Objects to Csv String|True|
-|Escape characters|False|
+|Escape characters|True|
 |Custom format string for output|True|
 |Custom format string for input|False|
 |Csv UTF-8 Stream to Objects|False|
@@ -104,7 +104,6 @@ Because I'm using Chinese date time format when writing this sample.
 6. To see help, execute `dotnet run bin\Debug\netcoreapp2.0\Nukepayload2.Csv.ModelGenerator.dll` (Change \ to / on Linux) .
 
 ## What is next?
-- [Prototyping] Excel flavored csv escape support.
 - [Pending] Lower allocation (waiting for `ref struct` support in VB) https://github.com/dotnet/vblang/issues/297 .
 - [Pending] Column-oriented storage for loading huge csv file.
 - [Pending] Excel flavored number parser (Parsing OADate is not planned).
@@ -131,7 +130,7 @@ Nukepayload2.Csv 是一个跨平台的 Csv 字符串 &lt;==&gt; .NET 对象转�
 |自定义 CSV 布局|是|
 |字符串到对象转换|是|
 |对象到字符串转换|是|
-|转义字符|否|
+|转义字符|是|
 |自定义输出格式字符串|是|
 |自定义输入格式字符串|否|
 |UTF-8 流到对象|否|
@@ -210,7 +209,6 @@ csv = CsvConvert.SerializeObject(converted);
 6. 执行命令查看查看帮助 `dotnet run bin\Debug\netcoreapp2.0\Nukepayload2.Csv.ModelGenerator.dll` (Linux 上把 \ 改成 /) .
 
 ## 下一步的计划?
-- [做原型] 支持 Excel 风格的 Csv 转义。
 - [挂起] 减少内存分配 （等 `ref struct` 在 VB 能用了再说） https://github.com/dotnet/vblang/issues/297 。
 - [挂起] 为大型 Csv 准备的列式存储。
 - [挂起] Excel 风格的数字解析（日期格式不考虑）。

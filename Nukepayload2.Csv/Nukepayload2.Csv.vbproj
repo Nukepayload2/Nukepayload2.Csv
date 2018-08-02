@@ -9,7 +9,10 @@
     <RepositoryUrl>https://github.com/Nukepayload2/Nukepayload2.Csv.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>csv, formatter, serializer, converter, vb, netstandard</PackageTags>
-    <PackageReleaseNotes>Allowed custom record formatters and parsers.</PackageReleaseNotes>
+    <PackageReleaseNotes>Added escape and MSExcel double number parse compatibility.
+- If a string contains quote or separator, it will be surrounded with quotes. quotes are escaped with Visual Basic's rules of escaping quotes in strings.
+- Supports to parse MSExcel's double string. US Dollar symbols, whitespaces, scientific notations, parentheses and thousands delimiters are allowed in a string of double. 
+- MSExcel's OADate and decimal fractions are not supported since they will cause ambiguity problems.</PackageReleaseNotes>
     <Description>Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter.
 Commonly Used members:
 Nukepayload2.Csv.CsvConvert.SerializeObject

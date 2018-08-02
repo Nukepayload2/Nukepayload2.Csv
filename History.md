@@ -12,3 +12,9 @@ Fixed unexpected behavior when dialing with System.Single and System.Int64.
 
 ### 1.1.0
 Improved performance for huge csv strings.
+
+### 1.2.0
+Added escape and MSExcel double number parse compatibility.
+- If a string contains quote or separator, it will be surrounded with quotes. quotes are escaped with Visual Basic's rules of escaping quotes in strings.
+- Supports to parse MSExcel's double string. US Dollar symbols, whitespaces, scientific notations, parentheses and thousands delimiters are allowed in a string of double. 
+- MSExcel's OADate and decimal fractions are not supported since they will cause ambiguity problems.

@@ -6,7 +6,17 @@
         If text Is Nothing Then
             Throw New FormatException("Boolean expected.")
         End If
-        Return text.Equals("True", StringComparison.OrdinalIgnoreCase)
+        Dim isTrue = text.Equals("True", StringComparison.OrdinalIgnoreCase)
+        If isTrue Then
+            Return True
+        Else
+            Dim isFalse = text.Equals("False", StringComparison.OrdinalIgnoreCase)
+            If isFalse Then
+                Return False
+            Else
+                Throw New FormatException("Boolean expected.")
+            End If
+        End If
     End Function
 
     Public Function GetString(data As Object, format As String) As String Implements ICsvRecordFormatter.GetString

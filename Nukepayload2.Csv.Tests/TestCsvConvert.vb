@@ -66,16 +66,66 @@ Public Class TestCsvConvert
     End Sub
 
     <TestMethod>
-    Public Sub TestAutoOrdered_ExcelLikeFormat()
+    Public Sub TestAutoOrdered_ExcelLikeEscape()
         Const Csv = "Rate,Id,Name,Date,IsUsed
-""$ 12,345.12"",-233,test string,2018-05-30,True
+""$ 12,345.12"",-233,""test """"string"""""",2018-05-30,True
 -1.234512E+04,0,,2018-10-18,False
 "
         Const CsvInMemory = "Id,Rate,Name,Date,IsUsed
--233,12345.12,test string,2018-05-30,True
+-233,12345.12,""test """"string"""""",2018-05-30,True
 0,-12345.12,,2018-10-18,False
 "
         Dim obj = CsvConvert.DeserializeObject(Of DecoratedModel)(Csv)
+        Dim csv2 = CsvConvert.SerializeObject(obj)
+        Assert.AreEqual(CsvInMemory, csv2)
+    End Sub
+
+    <TestMethod>
+    Public Sub TestAutoOrdered_MultiCharSeparator()
+        Const vbTab2 As String = vbTab + vbTab
+        Dim Csv = $"Rate{vbTab2}Id{vbTab2}Name{vbTab2}Date{vbTab2}IsUsed
+""$ 12,345.12""{vbTab2}-233{vbTab2}""test """"string""""""{vbTab2}2018-05-30{vbTab2}True
+-1.234512E+04{vbTab2}0{vbTab2}{vbTab2}2018-10-18{vbTab2}False
+"
+        Dim CsvInMemory = $"Id{vbTab2}Rate{vbTab2}Name{vbTab2}Date{vbTab2}IsUsed
+-233{vbTab2}12345.12{vbTab2}""test """"string""""""{vbTab2}2018-05-30{vbTab2}True
+0{vbTab2}-12345.12{vbTab2}{vbTab2}2018-10-18{vbTab2}False
+"
+        Dim settings As New CsvSettings With {.Separator = vbTab2}
+        Dim obj = CsvConvert.DeserializeObject(Of DecoratedModel)(Csv, settings)
+        Dim csv2 = CsvConvert.SerializeObject(obj, settings)
+        Assert.AreEqual(CsvInMemory, csv2)
+    End Sub
+
+    <TestMethod>
+    Public Sub TestAutoOrdered_ExcelFormats()
+        Const Csv = "Value
+$0
+$0.5
+-$0.5
+$-0.5
+(12.345)
+$(12.345)
+($12.345)
+$ 12.345
+1.2E+9
+(4.25E-05)
+8E7
+"
+        Const CsvInMemory = "Value
+0
+0.5
+-0.5
+-0.5
+-12.345
+-12.345
+-12.345
+12.345
+1200000000
+-4.25E-05
+80000000
+"
+        Dim obj = CsvConvert.DeserializeObject(Of SingleValueModel)(Csv)
         Dim csv2 = CsvConvert.SerializeObject(obj)
         Assert.AreEqual(CsvInMemory, csv2)
     End Sub
