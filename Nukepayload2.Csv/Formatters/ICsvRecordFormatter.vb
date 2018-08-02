@@ -1,17 +1,8 @@
-﻿Imports System.Text
-
-''' <summary>
+﻿''' <summary>
 ''' [Preview] Formats or parses specific field of each object.
 ''' This API is in preview. It will be changed in future releases.
 ''' </summary>
 Public Interface ICsvRecordFormatter
-    ''' <summary>
-    ''' Writes data into <see cref="StringBuilder"/> with the specified format string.
-    ''' </summary>
-    ''' <param name="data">Data to write</param>
-    ''' <param name="format">Format string to be applied</param>
-    ''' <param name="sb">Write to this string builder</param>
-    Sub WriteTo(data As Object, format As String, sb As StringBuilder)
     ''' <summary>
     ''' Formats the specified object to string.
     ''' </summary>

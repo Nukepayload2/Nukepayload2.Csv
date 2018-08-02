@@ -1,12 +1,6 @@
-﻿Imports System.Text
-
-Friend Class CsvLongFormatter
+﻿Friend Class CsvLongFormatter
     Inherits Singleton(Of CsvLongFormatter)
     Implements ICsvRecordFormatter
-
-    Public Sub WriteTo(data As Object, format As String, sb As StringBuilder) Implements ICsvRecordFormatter.WriteTo
-        sb.Append(DirectCast(data, Long).ToString(format))
-    End Sub
 
     Public Function Parse(text As String) As Object Implements ICsvRecordFormatter.Parse
         Return Long.Parse(text)

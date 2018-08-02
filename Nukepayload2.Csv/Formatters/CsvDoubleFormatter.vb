@@ -1,13 +1,8 @@
-﻿Imports System.Text
-Imports Nukepayload2.Csv.Numbers.Double
+﻿Imports Nukepayload2.Csv.Numbers.Double
 
 Friend Class CsvDoubleFormatter
     Inherits Singleton(Of CsvDoubleFormatter)
     Implements ICsvRecordFormatter
-
-    Public Sub WriteTo(data As Object, format As String, sb As StringBuilder) Implements ICsvRecordFormatter.WriteTo
-        sb.Append(DirectCast(data, Double).ToString(format))
-    End Sub
 
     Private ReadOnly _doubleView As New DoubleSemanticView
 

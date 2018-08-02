@@ -1,4 +1,5 @@
 ﻿Imports System.Reflection
+Imports System.Text
 
 ''' <summary>
 ''' Convert collection to csv, or convert them back.
@@ -53,7 +54,7 @@ Public Class CsvConvert
             Return Array.Empty(Of T)
         End If
         Dim head = lines(0)
-        Dim separator = settings.Separators
+        Dim separator = settings.Separator
         Dim entities(lines.Length - 2) As T
         Select Case settings.ColumnOrderKind
             Case CsvColumnOrderKind.Auto
@@ -87,9 +88,10 @@ Public Class CsvConvert
         Return value
     End Function
 
-    Private Shared Function InputEntity(Of T As New)(line As String, columns() As CsvColumnInfo, separator As String()) As T
+    Private Shared Function InputEntity(Of T As New)(line As String, columns() As CsvColumnInfo, separator As String) As T
         ' TODO: Allocation can be reduced.
-        Dim lineContent = line.Split(separator, StringSplitOptions.None)
+        Dim lineContent(columns.Length - 1) As String
+        line.SplitInto(separator, lineContent, StringSplitOptions.None)
         Dim entity As New T
         For i = 0 To columns.Length - 1
             Dim col = columns(i)
@@ -99,9 +101,10 @@ Public Class CsvConvert
         Return entity
     End Function
 
-    Private Shared Function InputEntity(Of T As New)(line As String, order As Integer(), columns() As CsvColumnInfo, separator As String()) As T
+    Private Shared Function InputEntity(Of T As New)(line As String, order As Integer(), columns() As CsvColumnInfo, separator As String) As T
         ' TODO: Allocation can be reduced.
-        Dim lineContent = line.Split(separator, StringSplitOptions.None)
+        Dim lineContent(columns.Length - 1) As String
+        line.SplitInto(separator, lineContent, StringSplitOptions.None)
         Dim entity As New T
         For i = 0 To columns.Length - 1
             Dim col = columns(i)
@@ -114,9 +117,10 @@ Public Class CsvConvert
         Return entity
     End Function
 
-    Private Shared Function GetHeadOrder(columns() As CsvColumnInfo, head As String, separator As String()) As Integer()
+    Private Shared Function GetHeadOrder(columns() As CsvColumnInfo, head As String, separator As String) As Integer()
         ' TODO: Allocation can be reduced.
-        Dim lineNames = head.Split(separator, StringSplitOptions.RemoveEmptyEntries)
+        Dim lineNames(columns.Length - 1) As String
+        head.SplitInto(separator, lineNames, StringSplitOptions.RemoveEmptyEntries)
         If lineNames.Length <> columns.Length Then
             ThrowForColumnNotFound(columns, lineNames)
         End If
@@ -198,11 +202,11 @@ Public Class CsvConvert
                             Dim value = col(obj)
                             ' The slowest part.
                             ' TODO: If FormatString = Nothing, numbers should be written in a optimized way.
-                            col.Formatter.WriteTo(value, col.FormatString, sb)
+                            EscapeAppend(col.Formatter.GetString(value, col.FormatString), separator, sb)
                             sb.Append(separator)
                         Next
                         Dim lastValue = lastCol(roList(i))
-                        lastCol.Formatter.WriteTo(lastValue, lastCol.FormatString, sb)
+                        EscapeAppend(lastCol.Formatter.GetString(lastValue, lastCol.FormatString), separator, sb)
                         sb.Append(newline)
                     Next
                 Else
@@ -232,11 +236,11 @@ Public Class CsvConvert
                             Dim obj = roList(i)
                             Dim col = columns(j)
                             Dim value = col(obj)
-                            col.Formatter.WriteTo(value, col.FormatString, sb)
+                            EscapeAppend(col.Formatter.GetString(value, col.FormatString), separator, sb)
                             sb.Append(separator)
                         Next
                         Dim lastValue = lastCol(roList(i))
-                        lastCol.Formatter.WriteTo(lastValue, lastCol.FormatString, sb)
+                        EscapeAppend(lastCol.Formatter.GetString(lastValue, lastCol.FormatString), separator, sb)
                         sb.Append(newline)
                     Next
                 Else
@@ -245,11 +249,59 @@ Public Class CsvConvert
                     For Each obj In objs
                         sb.Append(String.Join(separator, From col In columns
                                                          Let value = col(obj)
-                                                         Select col.Formatter.GetString(value, col.FormatString))).Append(newline)
+                                                         Select Escape(col.Formatter.GetString(value, col.FormatString), separator))).Append(newline)
                     Next
                 End If
         End Select
         Return sb.ToString
+    End Function
+
+    Private Shared ReadOnly Quote1 As String = """"
+    Private Shared ReadOnly Quote2 As String = """"""
+
+    Private Shared Sub EscapeAppend(value As String, separator As String, sb As StringBuilder)
+        Const Quote = """"c
+        If value Is Nothing Then
+            Return
+        End If
+        If value.Contains(Quote) Then
+            sb.Append(Quote)
+            ReplaceAppend(value, Quote1, Quote2, sb)
+            sb.Append(Quote)
+        ElseIf value.Contains(separator) Then
+            sb.Append(Quote).Append(value).Append(Quote)
+        Else
+            sb.Append(value)
+        End If
+    End Sub
+
+    Private Shared Sub ReplaceAppend(value As String, find As String, replacement As String, sb As StringBuilder)
+        Dim expLength = value.Length
+        Dim findLength = find.Length
+        Dim spanStart = 0
+        Do While spanStart < expLength
+            Dim spanNext As Integer = value.IndexOf(find, spanStart)
+            If spanNext >= 0 Then
+                sb.Append(value.Substring(spanStart, spanNext - spanStart)).Append(replacement)
+                spanStart = spanNext + findLength
+            Else
+                sb.Append(value.Substring(spanStart))
+                Return
+            End If
+        Loop
+    End Sub
+
+    Private Shared Function Escape(value As String, separator As String) As String
+        If value Is Nothing Then
+            Return Nothing
+        End If
+        If value.Contains(""""c) Then
+            Return """" + value.Replace("""", """""") + """"
+        ElseIf value.Contains(separator) Then
+            Return """" + value + """"
+        Else
+            Return value
+        End If
     End Function
 
     Private Shared Iterator Function OrderSelect(Of T)(collection As T(), order As IReadOnlyList(Of Integer)) As IEnumerable(Of T)

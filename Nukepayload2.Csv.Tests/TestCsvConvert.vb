@@ -66,6 +66,21 @@ Public Class TestCsvConvert
     End Sub
 
     <TestMethod>
+    Public Sub TestAutoOrdered_ExcelLikeFormat()
+        Const Csv = "Rate,Id,Name,Date,IsUsed
+""$ 12,345.12"",-233,test string,2018-05-30,True
+-1.234512E+04,0,,2018-10-18,False
+"
+        Const CsvInMemory = "Id,Rate,Name,Date,IsUsed
+-233,12345.12,test string,2018-05-30,True
+0,-12345.12,,2018-10-18,False
+"
+        Dim obj = CsvConvert.DeserializeObject(Of DecoratedModel)(Csv)
+        Dim csv2 = CsvConvert.SerializeObject(obj)
+        Assert.AreEqual(CsvInMemory, csv2)
+    End Sub
+
+    <TestMethod>
     Public Sub TestSequentialOrdered()
         Const Csv = "Id,Rate,Name,Date,IsUsed
 -233,12345.12,test string,2018-05-30,True

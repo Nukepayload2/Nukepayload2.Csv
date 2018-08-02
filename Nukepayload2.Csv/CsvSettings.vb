@@ -17,14 +17,9 @@ Public Class CsvSettings
                 Throw New InvalidOperationException("Separator can't be set to empty or contains quote.")
             End If
             _Separator = value
-            _Separators = {value}
         End Set
     End Property
 
-    ''' <summary>
-    ''' The separator of csv. The default value is ",".
-    ''' </summary>
-    Friend ReadOnly Property Separators As String() = {","}
     ''' <summary>
     ''' The new line of csv. The default value is <see cref="Environment.NewLine"/>.
     ''' </summary>
