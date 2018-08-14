@@ -20,9 +20,12 @@ Friend Class CsvColumnInfo(Of T)
 
     Public Sub New(name As String, formatString As String, formatter As ICsvRecordFormatter, getMethod As MethodInfo, setMethod As MethodInfo)
         MyBase.New(name, formatString, formatter)
-
-        Me.GetMethod = CompileGetMethod(getMethod)
-        Me.SetMethod = CompileSetMethod(setMethod)
+        If getMethod IsNot Nothing Then
+            Me.GetMethod = CompileGetMethod(getMethod)
+        End If
+        If setMethod IsNot Nothing Then
+            Me.SetMethod = CompileSetMethod(setMethod)
+        End If
     End Sub
 
     Private Function CompileGetMethod(getMethod As MethodInfo) As Func(Of T, Object)

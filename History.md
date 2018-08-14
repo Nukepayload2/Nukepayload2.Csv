@@ -21,3 +21,6 @@ Added escape and MSExcel double number parse compatibility.
 - If a string contains quote or separator, it will be surrounded with quotes. quotes are escaped with Visual Basic's rules of escaping quotes in strings.
 - Supports to parse MSExcel's double string. US Dollar symbols, whitespaces, scientific notations, parentheses and thousands delimiters are allowed in a string of double. 
 - MSExcel's OADate and decimal fractions are not supported since they will cause ambiguity problems.
+
+### 1.3.1
+Added read-only models support.

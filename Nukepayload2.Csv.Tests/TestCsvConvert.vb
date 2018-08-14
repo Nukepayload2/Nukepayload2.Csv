@@ -154,6 +154,18 @@ $ 12.345
         Assert.AreEqual(Csv, csv2)
     End Sub
 
+    <TestMethod>
+    Public Sub TestReadOnlySerialize()
+        Dim values = {New ReadOnlyModel(1, "内容1", True), New ReadOnlyModel(233, "内容2", False)}
+        Dim settings As New CsvSettings
+        Dim csv = CsvConvert.SerializeObject(values, settings)
+        Const expected As String = "Id,Content,IsChecked
+1,内容1,True
+233,内容2,False
+"
+        Assert.AreEqual(expected, csv)
+    End Sub
+
     Private Sub TestSerialize(Of T As {New, Class})(data As T())
         Dim csv = CsvConvert.SerializeObject(data)
         Dim obj = CsvConvert.DeserializeObject(Of T)(csv)
