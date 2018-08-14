@@ -91,10 +91,6 @@ __C#__
 csv = CsvConvert.SerializeObject(converted);
 ```
 
-### Trouble shooting
-If these sample codes throw `FormatException` when deserializing, please set the current culture of the current thread to "zh-CN".
-Because I'm using Chinese date time format when writing this sample.
-
 ## VB and C# model Code generator (Preview)
 1. Clone this repo.
 2. Make sure .NET Core 2.x SDK is installed.
@@ -104,9 +100,8 @@ Because I'm using Chinese date time format when writing this sample.
 6. To see help, execute `dotnet run bin\Debug\netcoreapp2.0\Nukepayload2.Csv.ModelGenerator.dll` (Change \ to / on Linux) .
 
 ## What is next?
+- [Prototyping] Column-oriented storage for loading huge csv file.
 - [Pending] Lower allocation (waiting for `ref struct` support in VB) https://github.com/dotnet/vblang/issues/297 .
-- [Pending] Column-oriented storage for loading huge csv file.
-- [Pending] Excel flavored number parser (Parsing OADate is not planned).
 - [Pending] Optimize getter and setter for Int32, Int64, Single and Double since they are frequently used in csv.
 
 # Nukepayload2.Csv 中文介绍
@@ -209,7 +204,6 @@ csv = CsvConvert.SerializeObject(converted);
 6. 执行命令查看查看帮助 `dotnet run bin\Debug\netcoreapp2.0\Nukepayload2.Csv.ModelGenerator.dll` (Linux 上把 \ 改成 /) .
 
 ## 下一步的计划?
+- [做原型] 为大型 Csv 准备的列式存储。
 - [挂起] 减少内存分配 （等 `ref struct` 在 VB 能用了再说） https://github.com/dotnet/vblang/issues/297 。
-- [挂起] 为大型 Csv 准备的列式存储。
-- [挂起] Excel 风格的数字解析（日期格式不考虑）。
 - [挂起] 为常用的 Int32, Int64, Single 和 Double 提供读写性能优化。
