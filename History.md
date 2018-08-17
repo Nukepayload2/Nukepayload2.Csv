@@ -24,3 +24,8 @@ Added escape and MSExcel double number parse compatibility.
 
 ### 1.3.1
 Added read-only models support.
+
+### 1.3.2
+- Added global csv column selection setting.
+- Added per-class column order setting override support.
+- Added per-class csv column selection setting override support.

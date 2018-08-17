@@ -47,6 +47,10 @@ Public Class CsvSettings
     ''' </summary>
     Public Property ColumnOrderKind As CsvColumnOrderKind
     ''' <summary>
+    ''' Indicates how csv property is selected to participate serialization and deserialization.
+    ''' </summary>
+    Public Property ColumnSelectionMode As CsvColumnSelectionMode
+    ''' <summary>
     ''' Get the default instance of CsvSettings. Any modifications to this object will affect default behaviors of <see cref="CsvConvert.DeserializeObject(Of T)(String)"/> and <see cref="CsvConvert.SerializeObject(Of T)(IEnumerable(Of T))"/> .
     ''' </summary>
     Public Shared ReadOnly Property [Default] As New CsvSettings
@@ -61,7 +65,7 @@ End Class
 ''' </summary>
 Public Enum CsvColumnOrderKind
     ''' <summary>
-    ''' The column order of csv must be inferred at runtime. (Slowest when columns have large quantity)
+    ''' The column order of csv must be inferred at runtime. (Default. Slowest when columns have large quantity)
     ''' </summary>
     Auto
     ''' <summary>
@@ -72,4 +76,18 @@ Public Enum CsvColumnOrderKind
     ''' The column order of csv is specified with <see cref="ColumnFormatAttribute.ColumnIndex"/>. (Recommended when columns are many and unordered)
     ''' </summary>
     Explicit
+End Enum
+
+''' <summary>
+''' Indicates how csv property is selected to participate serialization and deserialization.
+''' </summary>
+Public Enum CsvColumnSelectionMode
+    ''' <summary>
+    ''' The property will be serialized or deserialized only if <see cref="CsvIgnoreAttribute"/> is not applied. (Default)
+    ''' </summary>
+    OptOut
+    ''' <summary>
+    ''' The property will be serialized or deserialized only if <see cref="CsvPropertyAttribute"/> is applied.
+    ''' </summary>
+    OptIn
 End Enum

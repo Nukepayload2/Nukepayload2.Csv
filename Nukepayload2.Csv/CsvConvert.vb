@@ -1,11 +1,12 @@
 ﻿Imports System.Reflection
 Imports System.Text
+Imports Nukepayload2.Csv
 
 ''' <summary>
 ''' Convert collection to csv, or convert them back.
 ''' </summary>
 Public Class CsvConvert
-    Private Shared s_cachedColumns As New Dictionary(Of Type, CsvColumnInfo())
+    Private Shared s_cachedColumns As New Dictionary(Of Type, CsvSheetInfo)
     Private Shared s_cachedHeaderOrder As New Dictionary(Of Type, Integer())
 
     ''' <summary>
@@ -44,10 +45,12 @@ Public Class CsvConvert
             settings = CsvSettings.Default
         End If
         Dim columnType As Type = GetType(T)
-        Dim columns = GetColumns(columnType, settings.RecordFormatterCache)
+        Dim sheetInfo = GetColumns(columnType, settings.RecordFormatterCache, settings.ColumnSelectionMode)
+        Dim columns = sheetInfo.ColumnInfo
         If columns.Length = 0 OrElse String.IsNullOrEmpty(text) Then
             Return Array.Empty(Of T)
         End If
+        CheckColumnWriteAccess(columns)
         ' TODO: Allocation can be reduced.
         Dim lines = text.Split(settings.NewLineSeparators, StringSplitOptions.RemoveEmptyEntries)
         If lines.Length < 2 Then
@@ -56,7 +59,7 @@ Public Class CsvConvert
         Dim head = lines(0)
         Dim separator = settings.Separator
         Dim entities(lines.Length - 2) As T
-        Select Case settings.ColumnOrderKind
+        Select Case GetOrderKind(settings, sheetInfo.ColumnOrderKind)
             Case CsvColumnOrderKind.Auto
                 Dim order = GetHeadOrder(columns, head, separator)
                 For i = 1 To lines.Length - 1
@@ -74,6 +77,22 @@ Public Class CsvConvert
         End Select
         Return entities
     End Function
+
+    Private Shared Sub CheckColumnWriteAccess(columns As CsvColumnInfo())
+        For Each c In columns
+            If Not c.CanWrite Then
+                Throw New ArgumentException("Attempt to write to a read-only property.")
+            End If
+        Next
+    End Sub
+
+    Private Shared Sub CheckColumnReadAccess(columns As CsvColumnInfo())
+        For Each c In columns
+            If Not c.CanRead Then
+                Throw New ArgumentException("Attempt to read from a write-only property.")
+            End If
+        Next
+    End Sub
 
     Private Shared Function GetHeadOrderFor(Of T)() As Integer()
         Dim columnType = GetType(T)
@@ -172,16 +191,18 @@ Public Class CsvConvert
             settings = CsvSettings.Default
         End If
         Dim columnType As Type = GetType(T)
-        Dim columns = GetColumns(columnType, settings.RecordFormatterCache)
+        Dim sheetInfo = GetColumns(columnType, settings.RecordFormatterCache, settings.ColumnSelectionMode)
+        Dim columns = sheetInfo.ColumnInfo
         Dim columnLength As Integer = columns.Length
         If columnLength = 0 OrElse objs Is Nothing Then
             Return String.Empty
         End If
+        CheckColumnReadAccess(columns)
         Dim separator = settings.Separator
         ' Enable StringBuilder pooling.
         Dim sb = StringBuilderCache.Instance
         Dim newline = settings.NewLine
-        Select Case settings.ColumnOrderKind
+        Select Case GetOrderKind(settings, sheetInfo.ColumnOrderKind)
             Case CsvColumnOrderKind.Explicit
                 Dim order = GetHeadOrderFor(Of T)()
                 ' Convert to non-linq code on hot paths.
@@ -256,6 +277,14 @@ Public Class CsvConvert
         Return sb.ToString
     End Function
 
+    Private Shared Function GetOrderKind(settings As CsvSettings, fallback As CsvColumnOrderKind?) As CsvColumnOrderKind
+        If fallback Is Nothing Then
+            Return settings.ColumnOrderKind
+        Else
+            Return fallback.Value
+        End If
+    End Function
+
     Private Shared ReadOnly Quote1 As String = """"
     Private Shared ReadOnly Quote2 As String = """"""
 
@@ -310,12 +339,27 @@ Public Class CsvConvert
         Next
     End Function
 
-    Private Shared Function GetColumns(modelType As Type, formatterCache As ICsvRecordFormatterCache) As CsvColumnInfo()
-        Dim value As CsvColumnInfo() = Nothing
+    Private Shared Function GetColumns(modelType As Type, formatterCache As ICsvRecordFormatterCache, defaultSelectionMode As CsvColumnSelectionMode) As CsvSheetInfo
+        Dim value As CsvSheetInfo = Nothing
         If Not s_cachedColumns.TryGetValue(modelType, value) Then
-            value = Aggregate prop In modelType.GetRuntimeProperties
+            Dim selectionModeOverride = modelType.GetCustomAttribute(Of ColumnSelectionAttribute)
+            If selectionModeOverride IsNot Nothing Then
+                defaultSelectionMode = selectionModeOverride.SelectionMode
+            End If
+            Dim propPredict As Predicate(Of PropertyInfo)
+            If defaultSelectionMode = CsvColumnSelectionMode.OptOut Then
+                propPredict = Function(prop) prop.GetCustomAttribute(Of CsvIgnoreAttribute) Is Nothing
+            Else
+                propPredict = Function(prop) prop.GetCustomAttribute(Of CsvPropertyAttribute) IsNot Nothing
+            End If
+            Dim orderKindOverride = modelType.GetCustomAttribute(Of ColumnOrderKindAttribute)
+            If orderKindOverride IsNot Nothing Then
+                value.ColumnOrderKind = orderKindOverride.ColumnOrderKind
+            End If
+            value.ColumnInfo = Aggregate prop In modelType.GetRuntimeProperties
                     Where prop.CanRead AndAlso prop.GetMethod.IsPublic
                     Let formatInfo = prop.GetCustomAttribute(Of ColumnFormatAttribute)
+                    Where propPredict(prop)
                     Select CreateCsvColumnInfo(prop, formatInfo, modelType, formatterCache) Into ToArray
             s_cachedColumns.Add(modelType, value)
         End If

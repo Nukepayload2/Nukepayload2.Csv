@@ -155,6 +155,17 @@ $ 12.345
     End Sub
 
     <TestMethod>
+    Public Sub TestExplicitOrdered2()
+        Const Csv = "Id,Name,Rate,Date,IsUsed
+-233,test string,12345.12,2018-05-30,True
+0,,-12345.12,2018-10-18,False
+"
+        Dim obj = CsvConvert.DeserializeObject(Of ExplicitModel)(Csv)
+        Dim csv2 = CsvConvert.SerializeObject(obj)
+        Assert.AreEqual(Csv, csv2)
+    End Sub
+
+    <TestMethod>
     Public Sub TestReadOnlySerialize()
         Dim values = {New ReadOnlyModel(1, "内容1", True), New ReadOnlyModel(233, "内容2", False)}
         Dim settings As New CsvSettings
@@ -164,6 +175,34 @@ $ 12.345
 233,内容2,False
 "
         Assert.AreEqual(expected, csv)
+    End Sub
+
+    <TestMethod>
+    Public Sub TestOptInOptOutSerialize()
+        Dim values = {
+            New OptInSerializationModel(1, "内容1", True),
+            New OptInSerializationModel(233, "内容2", False)
+        }
+        Dim settings As New CsvSettings
+        Dim csv = CsvConvert.SerializeObject(values, settings)
+        Const expected As String = "Id,Content,IsChecked
+1,内容1,True
+233,内容2,False
+"
+        Assert.AreEqual(expected, csv)
+        Dim values2 = {
+            New OptOutSerializationModel(1, "内容1", True),
+            New OptOutSerializationModel(233, "内容2", False)
+        }
+        Dim csv2 = CsvConvert.SerializeObject(values2, settings)
+        Assert.AreEqual(expected, csv2)
+        Dim optOuts = CsvConvert.DeserializeObject(Of OptOutSerializationModel)(csv, settings)
+        Assert.AreEqual(expected, CsvConvert.SerializeObject(optOuts))
+        Assert.AreEqual(2, optOuts.Count)
+        Assert.IsNull(optOuts(0).Garbage)
+        Dim optIns = CsvConvert.DeserializeObject(Of OptInSerializationModel)(csv, settings)
+        Assert.AreEqual(expected, CsvConvert.SerializeObject(optIns))
+        Assert.IsNull(optIns(0).Garbage)
     End Sub
 
     Private Sub TestSerialize(Of T As {New, Class})(data As T())

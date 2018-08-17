@@ -21,6 +21,8 @@ Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter
 |Objects to Csv String|True|
 |Escape characters|True|
 |Custom format string for output|True|
+|Read-only properties|True|
+|Opt-in and Opt-out columns|True|
 |Custom format string for input|False|
 |Csv UTF-8 Stream to Objects|False|
 |Objects to UTF-8 Stream|False|
@@ -127,6 +129,8 @@ Nukepayload2.Csv 是一个跨平台的 Csv 字符串 &lt;==&gt; .NET 对象转�
 |对象到字符串转换|是|
 |转义字符|是|
 |自定义输出格式字符串|是|
+|只读属性支持|是|
+|选入和排除的 csv 列选择模式|是|
 |自定义输入格式字符串|否|
 |UTF-8 流到对象|否|
 |对象 to UTF-8 流|否|

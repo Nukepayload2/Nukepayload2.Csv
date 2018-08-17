@@ -10,6 +10,9 @@ Friend MustInherit Class CsvColumnInfo
         Me.Formatter = formatter
     End Sub
 
+    Public MustOverride ReadOnly Property CanRead As Boolean
+    Public MustOverride ReadOnly Property CanWrite As Boolean
+
     Default Public MustOverride Property ColumnValue(entity As Object) As Object
 End Class
 
@@ -56,5 +59,17 @@ Friend Class CsvColumnInfo(Of T)
         Set(value As Object)
             SetMethod.Invoke(DirectCast(entity, T), value)
         End Set
+    End Property
+
+    Public Overrides ReadOnly Property CanRead As Boolean
+        Get
+            Return GetMethod IsNot Nothing
+        End Get
+    End Property
+
+    Public Overrides ReadOnly Property CanWrite As Boolean
+        Get
+            Return SetMethod IsNot Nothing
+        End Get
     End Property
 End Class
