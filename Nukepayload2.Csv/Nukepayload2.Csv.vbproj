@@ -10,7 +10,7 @@
     <Company>Nukepayload2</Company>
     <RepositoryUrl>https://github.com/Nukepayload2/Nukepayload2.Csv.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>csv, formatter, serializer, converter, vb, netstandard</PackageTags>
+    <PackageTags>csv, tsv, formatter, serializer, converter, vb, netstandard</PackageTags>
     <PackageReleaseNotes>- Added global csv column selection setting.
 - Added per-class column order setting override support.
 - Added per-class csv column selection setting override support.
@@ -47,6 +47,7 @@ NOTE: Please don't forget to add the "Code Generation" capability if you are usi
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Nukepayload2.Buffers" Version="1.0.0-beta" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.1" />
   </ItemGroup>
 
