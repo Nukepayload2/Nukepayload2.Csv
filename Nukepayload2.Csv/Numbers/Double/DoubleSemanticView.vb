@@ -493,7 +493,7 @@ PlainNumber:        If syntax.HasParen Then
                 value *= 10
                 value += cur
             Next
-            If value > (If(isEMinus, 309, 308)) OrElse value < 0 Then
+            If value > If(isEMinus, 309, 308) OrElse value < 0 Then
                 Return False
             End If
             number = value

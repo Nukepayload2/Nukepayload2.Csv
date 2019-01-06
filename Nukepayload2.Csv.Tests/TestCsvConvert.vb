@@ -66,6 +66,23 @@ Public Class TestCsvConvert
     End Sub
 
     <TestMethod>
+    Public Sub TestAutoOrdered_QuoteNewLine()
+        Const Csv = "Rate,Id,Name,Date,IsUsed
+12345.12,-233,""
+"",2018-05-30,True
+-12345.12,0,,2018-10-18,False
+"
+        Const CsvInMemory = "Id,Rate,Name,Date,IsUsed
+-233,12345.12,""
+"",2018-05-30,True
+0,-12345.12,,2018-10-18,False
+"
+        Dim obj = CsvConvert.DeserializeObject(Of DecoratedModel)(Csv)
+        Dim csv2 = CsvConvert.SerializeObject(obj)
+        Assert.AreEqual(CsvInMemory, csv2)
+    End Sub
+
+    <TestMethod>
     Public Sub TestAutoOrdered_ExcelLikeEscape()
         Const Csv = "Rate,Id,Name,Date,IsUsed
 ""$ 12,345.12"",-233,""test """"string"""""",2018-05-30,True
@@ -205,10 +222,4 @@ $ 12.345
         Assert.IsNull(optIns(0).Garbage)
     End Sub
 
-    Private Sub TestSerialize(Of T As {New, Class})(data As T())
-        Dim csv = CsvConvert.SerializeObject(data)
-        Dim obj = CsvConvert.DeserializeObject(Of T)(csv)
-        Dim csv2 = CsvConvert.SerializeObject(obj)
-        Assert.AreEqual(csv, csv2)
-    End Sub
 End Class

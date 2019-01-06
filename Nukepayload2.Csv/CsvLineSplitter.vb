@@ -6,7 +6,51 @@ Friend Module CsvLineSplitter
     Private Const SingleQuote As String = """"
 
     <Extension>
-    Public Sub SplitInto(text As String, separator As String, result As String(), options As StringSplitOptions)
+    Public Function SplitLines(text As String, newLine As String) As List(Of String)
+        Debug.Assert(text <> Nothing, "Text can't be empty.")
+        Debug.Assert(newLine <> Nothing, "Separator can't be empty.")
+
+        Dim result As New List(Of String)
+        Dim inQuote = False
+        Dim startIndex = 0
+        Dim length = 0
+        Dim newLineStart = newLine(0)
+        Dim i = 0
+        Do While i < text.Length
+            Dim ch = text(i)
+            If ch = QuoteChar Then
+                inQuote = Not inQuote
+                length += 1
+                i += 1
+            ElseIf ch = newLineStart Then
+                If IsSeparator(text, newLine, i) Then
+                    If inQuote Then
+                        length += 1
+                        i += 1
+                    Else
+                        If length > 0 Then
+                            result.Add(text.Substring(startIndex, length))
+                        End If
+                        startIndex = i + newLine.Length
+                        i += newLine.Length
+                        length = 0
+                    End If
+                Else
+                    ' i was increased by IsSeparator
+                End If
+            Else
+                length += 1
+                i += 1
+            End If
+        Loop
+        If length > 0 Then
+            result.Add(text.Substring(startIndex, length))
+        End If
+        Return result
+    End Function
+
+    <Extension>
+    Public Sub SplitElementsInto(text As String, separator As String, result As String(), options As StringSplitOptions)
         Debug.Assert(text <> Nothing, "Text can't be empty.")
         Debug.Assert(separator <> Nothing, "Separator can't be empty.")
         Debug.Assert(result IsNot Nothing AndAlso result.Length > 0, "Result array can't be empty.")
@@ -116,7 +160,7 @@ Friend Module CsvLineSplitter
             Dim ch = text(i + j)
             Dim sp = separator(j)
             If ch <> sp Then
-                i = j
+                i += j
                 Return False
             End If
         Next

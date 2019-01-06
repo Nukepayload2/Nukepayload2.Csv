@@ -52,26 +52,26 @@ Public Class CsvConvert
         End If
         CheckColumnWriteAccess(columns)
         ' TODO: Allocation can be reduced.
-        Dim lines = text.Split(settings.NewLineSeparators, StringSplitOptions.RemoveEmptyEntries)
-        If lines.Length < 2 Then
+        Dim lines = text.SplitLines(settings.NewLine)
+        If lines.Count < 2 Then
             Return Array.Empty(Of T)
         End If
         Dim head = lines(0)
         Dim separator = settings.Separator
-        Dim entities(lines.Length - 2) As T
+        Dim entities(lines.Count - 2) As T
         Select Case GetOrderKind(settings, sheetInfo.ColumnOrderKind)
             Case CsvColumnOrderKind.Auto
                 Dim order = GetHeadOrder(columns, head, separator)
-                For i = 1 To lines.Length - 1
+                For i = 1 To lines.Count - 1
                     entities(i - 1) = InputEntity(Of T)(lines(i), order, columns, separator)
                 Next
             Case CsvColumnOrderKind.Sequential
-                For i = 1 To lines.Length - 1
+                For i = 1 To lines.Count - 1
                     entities(i - 1) = InputEntity(Of T)(lines(i), columns, separator)
                 Next
             Case CsvColumnOrderKind.Explicit
                 Dim order = GetHeadOrderFor(Of T)()
-                For i = 1 To lines.Length - 1
+                For i = 1 To lines.Count - 1
                     entities(i - 1) = InputEntity(Of T)(lines(i), order, columns, separator)
                 Next
         End Select
@@ -110,7 +110,7 @@ Public Class CsvConvert
     Private Shared Function InputEntity(Of T As New)(line As String, columns() As CsvColumnInfo, separator As String) As T
         ' TODO: Allocation can be reduced.
         Dim lineContent(columns.Length - 1) As String
-        line.SplitInto(separator, lineContent, StringSplitOptions.None)
+        line.SplitElementsInto(separator, lineContent, StringSplitOptions.None)
         Dim entity As New T
         For i = 0 To columns.Length - 1
             Dim col = columns(i)
@@ -123,7 +123,7 @@ Public Class CsvConvert
     Private Shared Function InputEntity(Of T As New)(line As String, order As Integer(), columns() As CsvColumnInfo, separator As String) As T
         ' TODO: Allocation can be reduced.
         Dim lineContent(columns.Length - 1) As String
-        line.SplitInto(separator, lineContent, StringSplitOptions.None)
+        line.SplitElementsInto(separator, lineContent, StringSplitOptions.None)
         Dim entity As New T
         For i = 0 To columns.Length - 1
             Dim col = columns(i)
@@ -139,7 +139,7 @@ Public Class CsvConvert
     Private Shared Function GetHeadOrder(columns() As CsvColumnInfo, head As String, separator As String) As Integer()
         ' TODO: Allocation can be reduced.
         Dim lineNames(columns.Length - 1) As String
-        head.SplitInto(separator, lineNames, StringSplitOptions.RemoveEmptyEntries)
+        head.SplitElementsInto(separator, lineNames, StringSplitOptions.RemoveEmptyEntries)
         If lineNames.Length <> columns.Length Then
             ThrowForColumnNotFound(columns, lineNames)
         End If
@@ -223,11 +223,11 @@ Public Class CsvConvert
                             Dim value = col(obj)
                             ' The slowest part.
                             ' TODO: If FormatString = Nothing, numbers should be written in a optimized way.
-                            EscapeAppend(col.Formatter.GetString(value, col.FormatString), separator, sb)
+                            EscapeAppend(col.Formatter.GetString(value, col.FormatString), separator, newline, sb)
                             sb.Append(separator)
                         Next
                         Dim lastValue = lastCol(roList(i))
-                        EscapeAppend(lastCol.Formatter.GetString(lastValue, lastCol.FormatString), separator, sb)
+                        EscapeAppend(lastCol.Formatter.GetString(lastValue, lastCol.FormatString), separator, newline, sb)
                         sb.Append(newline)
                     Next
                 Else
@@ -257,11 +257,11 @@ Public Class CsvConvert
                             Dim obj = roList(i)
                             Dim col = columns(j)
                             Dim value = col(obj)
-                            EscapeAppend(col.Formatter.GetString(value, col.FormatString), separator, sb)
+                            EscapeAppend(col.Formatter.GetString(value, col.FormatString), separator, newline, sb)
                             sb.Append(separator)
                         Next
                         Dim lastValue = lastCol(roList(i))
-                        EscapeAppend(lastCol.Formatter.GetString(lastValue, lastCol.FormatString), separator, sb)
+                        EscapeAppend(lastCol.Formatter.GetString(lastValue, lastCol.FormatString), separator, newline, sb)
                         sb.Append(newline)
                     Next
                 Else
@@ -288,7 +288,7 @@ Public Class CsvConvert
     Private Shared ReadOnly Quote1 As String = """"
     Private Shared ReadOnly Quote2 As String = """"""
 
-    Private Shared Sub EscapeAppend(value As String, separator As String, sb As StringBuilder)
+    Private Shared Sub EscapeAppend(value As String, separator As String, newLine As String, sb As StringBuilder)
         Const Quote = """"c
         If value Is Nothing Then
             Return
@@ -298,6 +298,8 @@ Public Class CsvConvert
             ReplaceAppend(value, Quote1, Quote2, sb)
             sb.Append(Quote)
         ElseIf value.Contains(separator) Then
+            sb.Append(Quote).Append(value).Append(Quote)
+        ElseIf value.Contains(newLine) Then
             sb.Append(Quote).Append(value).Append(Quote)
         Else
             sb.Append(value)

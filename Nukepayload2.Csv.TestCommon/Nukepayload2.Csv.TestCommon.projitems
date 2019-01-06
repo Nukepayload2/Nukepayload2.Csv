@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>5c67a0aa-c587-4c87-881b-ac84d3affa7f</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Nukepayload2.Csv.TestCommon</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)DecoratedModel.vb" />
+    <Compile Include="$(MSBuildThisFileDirectory)OptInSerializationModel.vb" />
+    <Compile Include="$(MSBuildThisFileDirectory)RawModel.vb" />
+    <Compile Include="$(MSBuildThisFileDirectory)ReadOnlyModel.vb" />
+    <Compile Include="$(MSBuildThisFileDirectory)SingleValueModel.vb" />
+    <Compile Include="$(MSBuildThisFileDirectory)TestHelper.vb" />
+  </ItemGroup>
+</Project>
