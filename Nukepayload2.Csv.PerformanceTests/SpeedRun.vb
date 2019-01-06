@@ -1,8 +1,10 @@
-﻿Imports Microsoft.VisualStudio.TestTools.UnitTesting
+﻿Imports System.IO
+Imports System.Text
+Imports Microsoft.VisualStudio.TestTools.UnitTesting
 
 <TestClass>
 Public Class SpeedRun
-    Private Const LoopCount = 5_000
+    Private Const LoopCount = 5000
     Private Const Model1Count = 100
     Private Const Model2Count = 100
     Private ReadOnly _testModel1 As New DecoratedModel With {
@@ -21,6 +23,72 @@ Public Class SpeedRun
     }
     Private ReadOnly testData As DecoratedModel() = Enumerable.Repeat(_testModel1, Model1Count).
         Concat(Enumerable.Repeat(_testModel2, Model2Count)).ToArray
+
+    <TestMethod>
+    Public Sub TestOptimal()
+        For i = 1 To LoopCount
+            TestSerializeOptimal(testData)
+        Next
+    End Sub
+
+    Private ReadOnly _pooledText As New StringBuilder
+    Private Function TestSerializeOptimal(testData() As DecoratedModel) As List(Of DecoratedModel)
+        For Each test In testData
+            _pooledText.Append(test.BooleanValue).Append(",")
+            _pooledText.Append(test.DateValue.ToString).Append(",")
+            _pooledText.Append(test.DoubleValue).Append(",")
+            _pooledText.Append(test.IntegerValue).Append(",")
+            _pooledText.Append(test.StringValue).Append(vbCrLf)
+        Next
+        Dim csv = _pooledText.ToString
+        _pooledText.Clear()
+        Dim newItems As New List(Of DecoratedModel)
+        Dim length = 0
+        Dim remaining = csv.AsSpan
+
+#Disable Warning BC40000
+        Do While SelectLine(remaining, length)
+            Dim curLine = remaining.Slice(0, length)
+            Dim commaIndex = curLine.IndexOf(","c)
+            Dim obj As New DecoratedModel
+            obj.BooleanValue = Boolean.Parse(curLine.Slice(0, commaIndex))
+
+            Dim restPart = curLine.Slice(commaIndex + 1)
+            commaIndex = restPart.IndexOf(","c)
+            obj.DateValue = Date.Parse(restPart.Slice(0, commaIndex))
+
+            restPart = restPart.Slice(commaIndex + 1)
+            commaIndex = restPart.IndexOf(","c)
+            obj.DoubleValue = Double.Parse(restPart.Slice(0, commaIndex))
+
+            restPart = restPart.Slice(commaIndex + 1)
+            commaIndex = restPart.IndexOf(","c)
+            obj.IntegerValue = Integer.Parse(restPart.Slice(0, commaIndex))
+
+            restPart = restPart.Slice(commaIndex + 1)
+            obj.StringValue = New String(restPart.Slice(0, restPart.Length - 2))
+
+            newItems.Add(obj)
+            If length < remaining.Length Then
+                remaining = remaining.Slice(length)
+            Else
+                Exit Do
+            End If
+        Loop
+#Enable Warning BC40000
+        Return newItems
+    End Function
+
+    <Obsolete("ref struct")>
+    Private Function SelectLine(csv As ReadOnlySpan(Of Char), ByRef length As Integer) As Boolean
+        Dim idx = csv.IndexOf(vbCrLf)
+        If idx < 0 Then
+            Return False
+        Else
+            length = idx + 2
+            Return True
+        End If
+    End Function
 
     <TestMethod>
     Public Sub TestSameTypeExplicitCombo()
