@@ -207,4 +207,15 @@ Public Class CsvLineSplitterTests
         Assert.AreEqual("4", result(2))
     End Sub
 
+    <TestMethod>
+    Public Sub TestCustomLineSplit()
+        Const str = "一还还有二还还有三还还有四还"
+        Const separator = "还有"
+        Dim result = str.SplitLines(separator)
+        Assert.AreEqual("一还", result(0))
+        Assert.AreEqual("二还", result(1))
+        Assert.AreEqual("三还", result(2))
+        Assert.AreEqual("四还", result(3))
+    End Sub
+
 End Class

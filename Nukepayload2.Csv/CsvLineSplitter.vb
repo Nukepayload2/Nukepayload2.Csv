@@ -22,21 +22,22 @@ Friend Module CsvLineSplitter
                 inQuote = Not inQuote
                 length += 1
                 i += 1
-            ElseIf ch = newLineStart Then
-                If IsSeparator(text, newLine, i) Then
-                    If inQuote Then
-                        length += 1
-                        i += 1
-                    Else
+            ElseIf ch = newLineStart AndAlso Not inQuote Then
+                If newLine.Length + i <= text.Length Then
+                    If IsSeparator(text, i, newLine) Then
                         If length > 0 Then
                             result.Add(text.Substring(startIndex, length))
                         End If
                         startIndex = i + newLine.Length
                         i += newLine.Length
                         length = 0
+                    Else
+                        length += 1
+                        i += 1
                     End If
                 Else
-                    ' i was increased by IsSeparator
+                    length += 1
+                    Exit Do
                 End If
             Else
                 length += 1
@@ -67,7 +68,7 @@ Friend Module CsvLineSplitter
                     Select Case curChr
                         Case separatorStart
                             If separator.Length + i <= text.Length Then
-                                If IsSeparator(text, separator, i) Then
+                                If IsSeparator(text, i, separator) Then
                                     status = CsvLineSplitStatus.Separator
                                 Else
                                     status = CsvLineSplitStatus.RecordWithoutQuote
@@ -87,10 +88,12 @@ Friend Module CsvLineSplitter
                         Dim curChr = text(i)
                         If curChr = separatorStart Then
                             If separator.Length + i <= text.Length Then
-                                If IsSeparator(text, separator, i) Then
+                                If IsSeparator(text, i, separator) Then
                                     result(resultIndex) = text.Substring(recordStart, i - recordStart)
                                     status = CsvLineSplitStatus.Separator
                                     Continue While
+                                Else
+                                    i += 1
                                 End If
                             Else
                                 i = text.Length
@@ -155,12 +158,11 @@ Friend Module CsvLineSplitter
         End If
     End Sub
 
-    Private Function IsSeparator(text As String, separator As String, ByRef i As Integer) As Boolean
+    Private Function IsSeparator(text As String, startIndex As Integer, separator As String) As Boolean
         For j = 1 To separator.Length - 1
-            Dim ch = text(i + j)
+            Dim ch = text(startIndex + j)
             Dim sp = separator(j)
             If ch <> sp Then
-                i += j
                 Return False
             End If
         Next
