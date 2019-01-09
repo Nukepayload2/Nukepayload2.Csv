@@ -107,7 +107,7 @@ Public Class CsvConvert
         Return value
     End Function
 
-    Private Shared Function InputEntity(Of T As New)(line As String, columns() As CsvColumnInfo, separator As String) As T
+    Private Shared Function InputEntity(Of T As New)(line As StringSegment, columns() As CsvColumnInfo, separator As String) As T
         ' TODO: Allocation can be reduced.
         Dim lineContent(columns.Length - 1) As String
         line.SplitElementsInto(separator, lineContent, StringSplitOptions.None)
@@ -120,7 +120,7 @@ Public Class CsvConvert
         Return entity
     End Function
 
-    Private Shared Function InputEntity(Of T As New)(line As String, order As Integer(), columns() As CsvColumnInfo, separator As String) As T
+    Private Shared Function InputEntity(Of T As New)(line As StringSegment, order As Integer(), columns() As CsvColumnInfo, separator As String) As T
         ' TODO: Allocation can be reduced.
         Dim lineContent(columns.Length - 1) As String
         line.SplitElementsInto(separator, lineContent, StringSplitOptions.None)
@@ -136,7 +136,7 @@ Public Class CsvConvert
         Return entity
     End Function
 
-    Private Shared Function GetHeadOrder(columns() As CsvColumnInfo, head As String, separator As String) As Integer()
+    Private Shared Function GetHeadOrder(columns() As CsvColumnInfo, head As StringSegment, separator As String) As Integer()
         ' TODO: Allocation can be reduced.
         Dim lineNames(columns.Length - 1) As String
         head.SplitElementsInto(separator, lineNames, StringSplitOptions.RemoveEmptyEntries)

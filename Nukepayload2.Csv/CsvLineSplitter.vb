@@ -5,12 +5,20 @@ Friend Module CsvLineSplitter
     Private Const DoubleQuote As String = """"""
     Private Const SingleQuote As String = """"
 
+    Private t_result As New List(Of StringSegment)
+
     <Extension>
-    Public Function SplitLines(text As String, newLine As String) As List(Of String)
+    Public Function SplitLines(text As String, newLine As String) As List(Of StringSegment)
         Debug.Assert(text <> Nothing, "Text can't be empty.")
         Debug.Assert(newLine <> Nothing, "Separator can't be empty.")
 
-        Dim result As New List(Of String)
+        If t_result Is Nothing Then
+            t_result = New List(Of StringSegment)
+        Else
+            t_result.Clear()
+        End If
+        Dim result = t_result
+
         Dim inQuote = False
         Dim startIndex = 0
         Dim length = 0
@@ -26,7 +34,7 @@ Friend Module CsvLineSplitter
                 If newLine.Length + i <= text.Length Then
                     If IsSeparator(text, i, newLine) Then
                         If length > 0 Then
-                            result.Add(text.Substring(startIndex, length))
+                            result.Add(StringSegment.Slice(text, startIndex, length))
                         End If
                         startIndex = i + newLine.Length
                         i += newLine.Length
@@ -45,14 +53,18 @@ Friend Module CsvLineSplitter
             End If
         Loop
         If length > 0 Then
-            result.Add(text.Substring(startIndex, length))
+            result.Add(StringSegment.Slice(text, startIndex, length))
         End If
         Return result
     End Function
 
     <Extension>
     Public Sub SplitElementsInto(text As String, separator As String, result As String(), options As StringSplitOptions)
-        Debug.Assert(text <> Nothing, "Text can't be empty.")
+        SplitElementsInto(CType(text, StringSegment), separator, result, options)
+    End Sub
+
+    <Extension>
+    Public Sub SplitElementsInto(text As StringSegment, separator As String, result As String(), options As StringSplitOptions)
         Debug.Assert(separator <> Nothing, "Separator can't be empty.")
         Debug.Assert(result IsNot Nothing AndAlso result.Length > 0, "Result array can't be empty.")
 
@@ -64,7 +76,7 @@ Friend Module CsvLineSplitter
         While i < text.Length
             Select Case status
                 Case CsvLineSplitStatus.Unknown
-                    Dim curChr = text(i)
+                    Dim curChr = text.Item(i)
                     Select Case curChr
                         Case separatorStart
                             If separator.Length + i <= text.Length Then
@@ -89,7 +101,7 @@ Friend Module CsvLineSplitter
                         If curChr = separatorStart Then
                             If separator.Length + i <= text.Length Then
                                 If IsSeparator(text, i, separator) Then
-                                    result(resultIndex) = text.Substring(recordStart, i - recordStart)
+                                    result(resultIndex) = text.Slice(recordStart, i - recordStart).GetString
                                     status = CsvLineSplitStatus.Separator
                                     Continue While
                                 Else
@@ -116,7 +128,7 @@ Friend Module CsvLineSplitter
                             escapeSuspected = Not escapeSuspected
                         ElseIf escapeSuspected Then
                             If curChr = separatorStart Then
-                                result(resultIndex) = text.Substring(recordStart, i - 1 - recordStart).Replace(DoubleQuote, SingleQuote)
+                                result(resultIndex) = text.Slice(recordStart, i - 1 - recordStart).GetString.Replace(DoubleQuote, SingleQuote)
                                 status = CsvLineSplitStatus.Separator
                                 Continue While
                             Else
@@ -126,7 +138,7 @@ Friend Module CsvLineSplitter
                         i += 1
                     Loop
                     If escapeSuspected Then
-                        result(resultIndex) = text.Substring(recordStart, i - 1 - recordStart).Replace(DoubleQuote, SingleQuote)
+                        result(resultIndex) = text.Slice(recordStart, i - 1 - recordStart).GetString.Replace(DoubleQuote, SingleQuote)
                         recordStart = i
                         Exit While
                     Else
@@ -147,7 +159,7 @@ Friend Module CsvLineSplitter
             End Select
         End While
         If recordStart < i Then
-            result(resultIndex) = text.Substring(recordStart)
+            result(resultIndex) = text.Slice(recordStart).GetString
         End If
         If options = StringSplitOptions.None Then
             For j = resultIndex To result.Length - 1
@@ -159,6 +171,17 @@ Friend Module CsvLineSplitter
     End Sub
 
     Private Function IsSeparator(text As String, startIndex As Integer, separator As String) As Boolean
+        For j = 1 To separator.Length - 1
+            Dim ch = text(startIndex + j)
+            Dim sp = separator(j)
+            If ch <> sp Then
+                Return False
+            End If
+        Next
+        Return True
+    End Function
+
+    Private Function IsSeparator(text As StringSegment, startIndex As Integer, separator As String) As Boolean
         For j = 1 To separator.Length - 1
             Dim ch = text(startIndex + j)
             Dim sp = separator(j)
