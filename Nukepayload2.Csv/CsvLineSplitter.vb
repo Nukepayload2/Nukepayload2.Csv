@@ -1,9 +1,9 @@
 ﻿Imports System.Runtime.CompilerServices
 
 Friend Module CsvLineSplitter
-    Private Const QuoteChar = """"c
-    Private Const DoubleQuote As String = """"""
-    Private Const SingleQuote As String = """"
+    Private Const QuoteChar As Char = """"c
+    Private ReadOnly DoubleQuote As String = """"""
+    Private ReadOnly SingleQuote As String = """"
 
     Private t_result As New List(Of StringSegment)
 

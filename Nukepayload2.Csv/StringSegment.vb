@@ -2,7 +2,7 @@
 ''' <summary>
 ''' Represents a span of read-only memory of <see cref="Char"/>.
 ''' </summary>
-Friend Structure StringSegment
+Public Structure StringSegment
     Private _reference As String
     Private _start As Integer
     Public ReadOnly Length As Integer

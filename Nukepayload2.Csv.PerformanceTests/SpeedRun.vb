@@ -5,8 +5,8 @@ Imports Microsoft.VisualStudio.TestTools.UnitTesting
 <TestClass>
 Public Class SpeedRun
     Private Const LoopCount = 5000
-    Private Const Model1Count = 100
-    Private Const Model2Count = 100
+    Private Const Model1Count = 150
+    Private Const Model2Count = 150
     Private ReadOnly _testModel1 As New DecoratedModel With {
         .BooleanValue = True,
         .DateValue = #2018-05-30#,

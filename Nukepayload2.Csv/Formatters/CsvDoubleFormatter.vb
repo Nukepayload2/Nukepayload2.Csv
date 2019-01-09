@@ -18,8 +18,8 @@ Friend Class CsvDoubleFormatter
         Return DirectCast(data, Double).ToString(format)
     End Function
 
-    Public Function ParseBlittablePrimitive(text As String, ByRef primitive As CsvBlittablePrimitive) As Boolean Implements ICsvRecordFormatter.ParseBlittablePrimitive
-        primitive.DoubleValue = Double.Parse(text)
+    Public Function ParseBlittablePrimitive(text As StringSegment, ByRef primitive As CsvBlittablePrimitive) As Boolean Implements ICsvRecordFormatter.ParseBlittablePrimitive
+        primitive.DoubleValue = Double.Parse(text.GetString)
         Return True
     End Function
 End Class

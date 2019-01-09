@@ -289,18 +289,17 @@ Public Class CsvConvert
     Private Shared ReadOnly Quote2 As String = """"""
 
     Private Shared Sub EscapeAppend(value As String, separator As String, newLine As String, sb As StringBuilder)
-        Const Quote = """"c
         If value Is Nothing Then
             Return
         End If
-        If value.Contains(Quote) Then
-            sb.Append(Quote)
+        If value.Contains(Quote1) Then
+            sb.Append(Quote1)
             ReplaceAppend(value, Quote1, Quote2, sb)
-            sb.Append(Quote)
+            sb.Append(Quote1)
         ElseIf value.Contains(separator) Then
-            sb.Append(Quote).Append(value).Append(Quote)
+            sb.Append(Quote1).Append(value).Append(Quote1)
         ElseIf value.Contains(newLine) Then
-            sb.Append(Quote).Append(value).Append(Quote)
+            sb.Append(Quote1).Append(value).Append(Quote1)
         Else
             sb.Append(value)
         End If
@@ -326,10 +325,10 @@ Public Class CsvConvert
         If value Is Nothing Then
             Return Nothing
         End If
-        If value.Contains(""""c) Then
-            Return """" + value.Replace("""", """""") + """"
+        If value.Contains(Quote1) Then
+            Return Quote1 + value.Replace(Quote1, Quote2) + Quote1
         ElseIf value.Contains(separator) Then
-            Return """" + value + """"
+            Return Quote1 + value + Quote1
         Else
             Return value
         End If

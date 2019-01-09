@@ -21,5 +21,5 @@ Public Interface ICsvRecordFormatter
     ''' <param name="text">The string which to be converted to object.</param>
     ''' <param name="primitive">The result of parsed primitives</param>
     ''' <returns>Whether the converter supports primitive type.</returns>
-    Function ParseBlittablePrimitive(text As String, ByRef primitive As CsvBlittablePrimitive) As Boolean
+    Function ParseBlittablePrimitive(text As StringSegment, ByRef primitive As CsvBlittablePrimitive) As Boolean
 End Interface

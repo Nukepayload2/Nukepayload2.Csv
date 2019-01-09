@@ -10,8 +10,8 @@
         Return DirectCast(data, Single).ToString(format)
     End Function
 
-    Public Function ParseBlittablePrimitive(text As String, ByRef primitive As CsvBlittablePrimitive) As Boolean Implements ICsvRecordFormatter.ParseBlittablePrimitive
-        primitive.SingleValue = Single.Parse(text)
+    Public Function ParseBlittablePrimitive(text As StringSegment, ByRef primitive As CsvBlittablePrimitive) As Boolean Implements ICsvRecordFormatter.ParseBlittablePrimitive
+        primitive.SingleValue = Single.Parse(text.GetString)
         Return True
     End Function
 End Class
