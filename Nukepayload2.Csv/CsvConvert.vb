@@ -109,7 +109,7 @@ Public Class CsvConvert
 
     Private Shared Function InputEntity(Of T As New)(line As StringSegment, columns() As CsvColumnInfo, separator As String) As T
         ' TODO: Allocation can be reduced.
-        Dim lineContent(columns.Length - 1) As String
+        Dim lineContent(columns.Length - 1) As StringSegment
         line.SplitElementsInto(separator, lineContent, StringSplitOptions.None)
         Dim entity As New T
         For i = 0 To columns.Length - 1
@@ -122,7 +122,7 @@ Public Class CsvConvert
 
     Private Shared Function InputEntity(Of T As New)(line As StringSegment, order As Integer(), columns() As CsvColumnInfo, separator As String) As T
         ' TODO: Allocation can be reduced.
-        Dim lineContent(columns.Length - 1) As String
+        Dim lineContent(columns.Length - 1) As StringSegment
         line.SplitElementsInto(separator, lineContent, StringSplitOptions.None)
         Dim entity As New T
         For i = 0 To columns.Length - 1
@@ -139,7 +139,12 @@ Public Class CsvConvert
     Private Shared Function GetHeadOrder(columns() As CsvColumnInfo, head As StringSegment, separator As String) As Integer()
         ' TODO: Allocation can be reduced.
         Dim lineNames(columns.Length - 1) As String
-        head.SplitElementsInto(separator, lineNames, StringSplitOptions.RemoveEmptyEntries)
+        Dim lineNamesSeg(columns.Length - 1) As StringSegment
+        head.SplitElementsInto(separator, lineNamesSeg, StringSplitOptions.RemoveEmptyEntries)
+        For i = 0 To lineNamesSeg.Length - 1
+            Dim seg = lineNamesSeg(i)
+            lineNames(i) = seg.CopyToString
+        Next
         If lineNames.Length <> columns.Length Then
             ThrowForColumnNotFound(columns, lineNames)
         End If

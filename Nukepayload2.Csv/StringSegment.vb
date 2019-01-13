@@ -1,10 +1,10 @@
 ﻿Imports System.Runtime.CompilerServices
 ''' <summary>
-''' Represents a span of read-only memory of <see cref="Char"/>.
+''' [Preview] Represents a span of read-only memory of <see cref="Char"/>.
 ''' </summary>
 Public Structure StringSegment
-    Private _reference As String
-    Private _start As Integer
+    Private ReadOnly _reference As String
+    Private ReadOnly _start As Integer
     Public ReadOnly Length As Integer
 
     Public Sub New(reference As String, start As Integer, length As Integer)
@@ -36,18 +36,39 @@ Public Structure StringSegment
     End Function
 
     ''' <summary>
-    ''' Devirtualize ToString.
+    ''' Devirtualized version of <see cref="ToString()"/>.
     ''' </summary>
     <MethodImpl(MethodImplOptions.AggressiveInlining)>
-    Public Function GetString() As String
+    Public Function CopyToString() As String
+        If _reference Is Nothing Then
+            Return Nothing
+        End If
         Return _reference.Substring(_start, Length)
     End Function
 
-    Public Shared Widening Operator CType(str As String) As StringSegment
+    Public Shared Narrowing Operator CType(str As String) As StringSegment
         Return New StringSegment(str, 0, str.Length)
     End Operator
 
+    Public Shared Narrowing Operator CType(str As StringSegment) As String
+        Return str.CopyToString()
+    End Operator
+
+    Public ReadOnly Property IsNull As Boolean
+        Get
+            Return _reference Is Nothing
+        End Get
+    End Property
+
+    Public ReadOnly Property IsNullOrEmpty As Boolean
+        Get
+            Return Length = 0
+        End Get
+    End Property
+
     Public Overrides Function ToString() As String
-        Return GetString()
+        Return CopyToString()
     End Function
+
+    Public Shared ReadOnly Empty As New StringSegment(String.Empty, 0, 0)
 End Structure

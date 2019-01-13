@@ -13,7 +13,7 @@ Public Interface ICsvRecordFormatter
     ''' Converts the given text to object.
     ''' </summary>
     ''' <param name="text">The string which to be converted to object.</param>
-    Function Parse(text As String) As Object
+    Function Parse(text As StringSegment) As Object
     ''' <summary>
     ''' A shortcut for blittable primitive types. To avoid box and unbox when parsing.
     ''' Returns whether the converter supports primitive type.

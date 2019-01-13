@@ -59,12 +59,12 @@ Friend Module CsvLineSplitter
     End Function
 
     <Extension>
-    Public Sub SplitElementsInto(text As String, separator As String, result As String(), options As StringSplitOptions)
+    Public Sub SplitElementsInto(text As String, separator As String, result As StringSegment(), options As StringSplitOptions)
         SplitElementsInto(CType(text, StringSegment), separator, result, options)
     End Sub
 
     <Extension>
-    Public Sub SplitElementsInto(text As StringSegment, separator As String, result As String(), options As StringSplitOptions)
+    Public Sub SplitElementsInto(text As StringSegment, separator As String, result As StringSegment(), options As StringSplitOptions)
         Debug.Assert(separator <> Nothing, "Separator can't be empty.")
         Debug.Assert(result IsNot Nothing AndAlso result.Length > 0, "Result array can't be empty.")
 
@@ -101,7 +101,7 @@ Friend Module CsvLineSplitter
                         If curChr = separatorStart Then
                             If separator.Length + i <= text.Length Then
                                 If IsSeparator(text, i, separator) Then
-                                    result(resultIndex) = text.Slice(recordStart, i - recordStart).GetString
+                                    result(resultIndex) = text.Slice(recordStart, i - recordStart)
                                     status = CsvLineSplitStatus.Separator
                                     Continue While
                                 Else
@@ -128,7 +128,7 @@ Friend Module CsvLineSplitter
                             escapeSuspected = Not escapeSuspected
                         ElseIf escapeSuspected Then
                             If curChr = separatorStart Then
-                                result(resultIndex) = text.Slice(recordStart, i - 1 - recordStart).GetString.Replace(DoubleQuote, SingleQuote)
+                                result(resultIndex) = CType(text.Slice(recordStart, i - 1 - recordStart).CopyToString.Replace(DoubleQuote, SingleQuote), StringSegment)
                                 status = CsvLineSplitStatus.Separator
                                 Continue While
                             Else
@@ -138,7 +138,7 @@ Friend Module CsvLineSplitter
                         i += 1
                     Loop
                     If escapeSuspected Then
-                        result(resultIndex) = text.Slice(recordStart, i - 1 - recordStart).GetString.Replace(DoubleQuote, SingleQuote)
+                        result(resultIndex) = CType(text.Slice(recordStart, i - 1 - recordStart).CopyToString.Replace(DoubleQuote, SingleQuote), StringSegment)
                         recordStart = i
                         Exit While
                     Else
@@ -146,11 +146,11 @@ Friend Module CsvLineSplitter
                     End If
                 Case CsvLineSplitStatus.Separator
                     If options = StringSplitOptions.None Then
-                        If result(resultIndex) Is Nothing Then
-                            result(resultIndex) = String.Empty
+                        If result(resultIndex).IsNull Then
+                            result(resultIndex) = StringSegment.Empty
                         End If
                         resultIndex += 1
-                    ElseIf Not String.IsNullOrEmpty(result(resultIndex)) Then
+                    ElseIf Not result(resultIndex).IsNullOrEmpty Then
                         resultIndex += 1
                     End If
                     i += separator.Length
@@ -159,12 +159,12 @@ Friend Module CsvLineSplitter
             End Select
         End While
         If recordStart < i Then
-            result(resultIndex) = text.Slice(recordStart).GetString
+            result(resultIndex) = text.Slice(recordStart)
         End If
         If options = StringSplitOptions.None Then
             For j = resultIndex To result.Length - 1
-                If result(j) Is Nothing Then
-                    result(j) = String.Empty
+                If result(j).IsNull Then
+                    result(j) = StringSegment.Empty
                 End If
             Next
         End If

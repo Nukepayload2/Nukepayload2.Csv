@@ -6,7 +6,7 @@ Friend Class CsvDoubleFormatter
 
     Private ReadOnly _doubleView As New DoubleSemanticView
 
-    Public Function Parse(text As String) As Object Implements ICsvRecordFormatter.Parse
+    Public Function Parse(text As StringSegment) As Object Implements ICsvRecordFormatter.Parse
         Dim value As Double = Nothing
         If _doubleView.TryParse(text, value, "$"c) Then
             Return value
@@ -19,7 +19,7 @@ Friend Class CsvDoubleFormatter
     End Function
 
     Public Function ParseBlittablePrimitive(text As StringSegment, ByRef primitive As CsvBlittablePrimitive) As Boolean Implements ICsvRecordFormatter.ParseBlittablePrimitive
-        primitive.DoubleValue = Double.Parse(text.GetString)
+        primitive.DoubleValue = Double.Parse(text.CopyToString)
         Return True
     End Function
 End Class
