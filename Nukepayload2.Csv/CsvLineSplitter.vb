@@ -7,6 +7,9 @@ Friend Module CsvLineSplitter
 
     Private t_result As New List(Of StringSegment)
 
+    ''' <summary>
+    ''' 注意！这个方法的返回值在下次调用的时候会被修改！
+    ''' </summary>
     <Extension>
     Public Function SplitLines(text As String, newLine As String) As List(Of StringSegment)
         Debug.Assert(text <> Nothing, "Text can't be empty.")

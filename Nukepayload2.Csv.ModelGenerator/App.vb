@@ -37,8 +37,9 @@ Public Class App
         Else
             newLine = newLine.Replace("{CrLf}", vbCrLf).Replace("{Cr}", vbCr).Replace("{Lf}", vbLf)
         End If
-        Dim csv = File.ReadAllText(csvFilePath, enc).Split(newLine, StringSplitOptions.RemoveEmptyEntries)
-        If csv.Length < 2 Then
+        Dim sourceText As String = File.ReadAllText(csvFilePath, enc)
+        Dim csv = CsvLineSplitter.SplitLines(sourceText, newLine).ToArray
+        If csv.Count < 2 Then
             Console.WriteLine("Csv file is broken or encoding is not correct.")
             Return
         End If
@@ -90,14 +91,14 @@ Public Class App
         Return name
     End Function
 
-    Private Function WriteCode(code As ICodeGenerator, csv() As String, separator As String, className As String) As String
+    Private Function WriteCode(code As ICodeGenerator, csv As IReadOnlyList(Of StringSegment), separator As String, className As String) As String
         Dim firstLine = csv(0)
-        Dim headers = firstLine.Split({separator}, StringSplitOptions.RemoveEmptyEntries)
+        Dim headers = CsvLineSplitter.SplitLines(firstLine, separator).ToArray
         Dim sb As New IndentStringBuilder
         sb.IndentAppendLine(code.WriteImport("Nukepayload2.Csv")).AppendLine()
         sb.IndentAppendLines(code.WriteClass(className)).IncreaseIndent()
-        Dim inferredTypes = InferTypes(csv, separator, headers.Length)
-        For i = 0 To headers.Length - 1
+        Dim inferredTypes = InferTypes(csv, separator, headers.Count)
+        For i = 0 To headers.Count - 1
             Dim h = headers(i)
             sb.IndentAppendLine(code.WriteAttribute(GetType(ColumnFormatAttribute), $"""{h}"""))
             sb.IndentAppendLine(code.WriteProperty(RenameForClrName(h), inferredTypes(i)))
@@ -106,7 +107,7 @@ Public Class App
         Return sb.ToString
     End Function
 
-    Private Function InferTypes(csv() As String, separator As String, resultLength As Integer) As Type()
+    Private Function InferTypes(csv As IReadOnlyList(Of StringSegment), separator As String, resultLength As Integer) As Type()
         ' decision:
         ' Integer - Long - Single - Double - DateTime - Boolean - String
         Dim defaultDecision As Type = GetType(String)
@@ -118,11 +119,11 @@ Public Class App
             (Decision:=GetType(Boolean), Decide:=Function(str$) str.IsBoolean)
         }
         Dim types(resultLength - 1) As Type
-        Dim groups(resultLength - 1, csv.Length - 2) As String
-        For i = 1 To csv.Length - 1
+        Dim groups(resultLength - 1, csv.Count - 2) As String
+        For i = 1 To csv.Count - 1
             Dim ln = csv(i)
-            Dim rec = ln.Split(separator)
-            For j = 0 To resultLength - 1
+            Dim rec = CsvLineSplitter.SplitLines(ln, separator).ToArray
+            For j = 0 To rec.Length - 1
                 groups(j, i - 1) = rec(j)
             Next
         Next
@@ -130,7 +131,7 @@ Public Class App
             Dim selectorIndex = 0
             Do While selectorIndex < selectors.Length
                 Dim curSelector = selectors(selectorIndex)
-                For i = 0 To csv.Length - 2
+                For i = 0 To csv.Count - 2
                     If Not curSelector.Decide(groups(typeIndex, i)) Then
                         selectorIndex += 1
                         Continue Do

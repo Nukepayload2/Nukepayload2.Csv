@@ -2,7 +2,7 @@
   "profiles": {
     "Nukepayload2.Csv.ModelGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "-p boll.txt -s \"{Tab}\" -o test.vb -n {Cr}{CrLf}"
+      "commandLineArgs": "-p refined.csv -o refined.vb -n {Lf}"
     }
   }
 }
