@@ -2,7 +2,7 @@
   "profiles": {
     "Nukepayload2.Csv.ModelGenerator": {
       "commandName": "Project",
-      "commandLineArgs": "-p refined.csv -o refined.vb -n {Lf}"
+      "commandLineArgs": "-p 御魂.csv -e GB2312 -o 御魂.vb -n {CrLf}"
     }
   }
 }
