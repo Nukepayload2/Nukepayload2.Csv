@@ -18,7 +18,7 @@ Public Class App
                        <Display(ShortName:="s", Description:="The separator in csv file. The default value is ','. Escape rules: {Space} for space, {Tab} for tab.")>
                        Optional separator As String = ",",
                        <Display(ShortName:="n", Description:="The new line characters in csv file. The default value is Environment.NewLine. Escape rules: {Cr} for Mac default new line, {Lf} for Linux default new line, {CrLf} for Windows default new line.")>
-                       Optional newLine As String = ",")
+            Optional newLine As String = Nothing)
         Console.WriteLine("Csv model class file generator")
         Console.WriteLine("Copyright 2018 Nukepayload2")
         Console.WriteLine("For more information, see https://github.com/Nukepayload2/Nukepayload2.Csv")
