@@ -4,11 +4,17 @@ Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter
 ## Supported types in csv columns:
 - System.String
 - System.DateTime
+- System.DateTime?
 - System.Int32
+- System.Int32?
 - System.Int64
+- System.Int64?
 - System.Single
+- System.Single?
 - System.Double
+- System.Double?
 - System.Boolean
+- System.Boolean?
 
 ## Feature status
 
