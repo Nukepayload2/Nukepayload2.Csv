@@ -119,10 +119,17 @@ Nukepayload2.Csv 是一个跨平台的 Csv 字符串 &lt;==&gt; .NET 对象转�
 在 csv 每一列中支持的数据类型:
 - System.String
 - System.DateTime
+- System.DateTime?
 - System.Int32
+- System.Int32?
 - System.Int64
+- System.Int64?
 - System.Single
+- System.Single?
 - System.Double
+- System.Double?
+- System.Boolean
+- System.Boolean?
 
 ## 功能状态
 
