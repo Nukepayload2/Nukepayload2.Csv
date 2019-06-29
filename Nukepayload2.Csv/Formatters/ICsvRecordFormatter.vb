@@ -14,12 +14,4 @@ Public Interface ICsvRecordFormatter
     ''' </summary>
     ''' <param name="text">The string which to be converted to object.</param>
     Function Parse(text As StringSegment) As Object
-    ''' <summary>
-    ''' A shortcut for blittable primitive types. To avoid box and unbox when parsing.
-    ''' Returns whether the converter supports primitive type.
-    ''' </summary>
-    ''' <param name="text">The string which to be converted to object.</param>
-    ''' <param name="primitive">The result of parsed primitives</param>
-    ''' <returns>Whether the converter supports primitive type.</returns>
-    Function ParseBlittablePrimitive(text As StringSegment, ByRef primitive As CsvBlittablePrimitive) As Boolean
 End Interface

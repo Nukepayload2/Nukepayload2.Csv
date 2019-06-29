@@ -29,3 +29,9 @@ Added read-only models support.
 - Added global csv column selection setting.
 - Added per-class column order setting override support.
 - Added per-class csv column selection setting override support.
+
+### 1.4.0
+- Fallback to CLR double parser when culture is not en-US, ja-JP or zh-CN.
+- Supported nullable primitive value types.
+- Refactored some preview members.
+- Supported Chinese and Japanese currency symbol in the built-in double parser.

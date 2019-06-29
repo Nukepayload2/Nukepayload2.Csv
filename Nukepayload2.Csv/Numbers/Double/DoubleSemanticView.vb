@@ -2,10 +2,10 @@
     Friend Class DoubleSemanticView
         Private Const ZeroChar = AscW("0"c)
 
-        Friend Function TryParse(text As StringSegment, ByRef result As Double, currencySymbol As Char) As Boolean
+        Friend Function TryParse(text As StringSegment, ByRef result As Double) As Boolean
             If Not text.IsNullOrEmpty Then
                 Dim syntaxTree As New SyntaxTree
-                If TryGetSyntaxTree(text, currencySymbol, syntaxTree) Then
+                If TryGetSyntaxTree(text, syntaxTree) Then
                     Return TryParseExact(syntaxTree, result)
                 End If
             End If
@@ -13,7 +13,7 @@
             Return False
         End Function
 
-        Private Function TryGetSyntaxTree(text As StringSegment, currencySymbol As Char, ByRef syntaxTree As SyntaxTree) As Boolean
+        Private Function TryGetSyntaxTree(text As StringSegment, ByRef syntaxTree As SyntaxTree) As Boolean
             Dim strLen As Integer = text.Length
             Dim hasLeftParen As Boolean = False
             Dim hasRightParen As Boolean = False
@@ -127,17 +127,15 @@
                                 End If
                                 curSyntax = SyntaxKind.Percentage
                                 Continue While
-                            Case Else
-                                If current = currencySymbol Then
-                                    If hasCurrencySymbol Then
-                                        Return False
-                                    End If
-                                    curSyntax = SyntaxKind.CurrencySymbol
-                                    hasCurrencySymbol = True
-                                    Continue While
-                                Else
+                            Case "¥"c, "$"c
+                                If hasCurrencySymbol Then
                                     Return False
                                 End If
+                                curSyntax = SyntaxKind.CurrencySymbol
+                                hasCurrencySymbol = True
+                                Continue While
+                            Case Else
+                                Return False
                         End Select
                     Case SyntaxKind.Digits
                         digitNodeCount += 1

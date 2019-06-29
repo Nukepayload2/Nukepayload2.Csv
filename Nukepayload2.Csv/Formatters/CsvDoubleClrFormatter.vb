@@ -1,14 +1,12 @@
-﻿Imports Nukepayload2.Csv.Numbers.Double
-
-Friend Class CsvDoubleFormatter
-    Inherits Singleton(Of CsvDoubleFormatter)
+﻿Friend Class CsvDoubleClrFormatter
+    Inherits Singleton(Of CsvDoubleClrFormatter)
     Implements ICsvRecordFormatter
-
-    Private ReadOnly _doubleView As New DoubleSemanticView
 
     Public Function Parse(text As StringSegment) As Object Implements ICsvRecordFormatter.Parse
         Dim value As Double = Nothing
-        If _doubleView.TryParse(text, value) Then
+
+        If Double.TryParse(text.CopyToString, Globalization.NumberStyles.Any,
+                           Globalization.CultureInfo.CurrentCulture, value) Then
             Return value
         End If
         Throw New FormatException

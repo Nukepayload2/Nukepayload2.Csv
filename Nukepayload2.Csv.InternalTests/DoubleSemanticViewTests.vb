@@ -16,7 +16,7 @@ Public Class DoubleSemanticViewTests
     Private Shared Sub AssertNumber(text As String, answer As Double)
         Dim sv As New DoubleSemanticView
         Dim result As Double = Nothing
-        If sv.TryParse(text, result, "$"c) Then
+        If sv.TryParse(text, result) Then
             Assert.AreEqual(answer, result)
         Else
             Assert.Fail()

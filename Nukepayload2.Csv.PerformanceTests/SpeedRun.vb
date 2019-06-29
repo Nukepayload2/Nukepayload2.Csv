@@ -48,6 +48,7 @@ Public Class SpeedRun
 
 #Disable Warning BC40000
         Do While SelectLine(remaining, length)
+#Enable Warning BC40000
             Dim curLine = remaining.Slice(0, length)
             Dim commaIndex = curLine.IndexOf(","c)
             Dim obj As New DecoratedModel
@@ -75,11 +76,10 @@ Public Class SpeedRun
                 Exit Do
             End If
         Loop
-#Enable Warning BC40000
         Return newItems
     End Function
 
-    <Obsolete("ref struct")>
+    <Obsolete("This function contains the use of ref struct. Needs additional code review.")>
     Private Function SelectLine(csv As ReadOnlySpan(Of Char), ByRef length As Integer) As Boolean
         Dim idx = csv.IndexOf(vbCrLf)
         If idx < 0 Then

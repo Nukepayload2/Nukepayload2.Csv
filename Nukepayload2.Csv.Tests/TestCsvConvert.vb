@@ -40,9 +40,26 @@ Public Class TestCsvConvert
         }
     }
 
+    Private ReadOnly _nullableTestData As NullableModel() = {
+        New NullableModel With {
+            .BooleanValue = True,
+            .DateValue = Date.Now,
+            .DoubleValue = 12345.123,
+            .IntegerValue = -233,
+            .SingleValue = 123.13F,
+            .LongValue = 12345678901234567L
+        },
+        New NullableModel
+    }
+
     <TestMethod>
     Public Sub TestSerializeRaw()
         TestSerialize(_rawTestData)
+    End Sub
+
+    <TestMethod>
+    Public Sub TestSerializeNullable()
+        TestSerialize(_nullableTestData)
     End Sub
 
     <TestMethod>
