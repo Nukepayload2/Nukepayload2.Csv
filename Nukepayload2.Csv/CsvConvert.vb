@@ -1,4 +1,5 @@
-﻿Imports System.Reflection
+﻿Imports System.Collections.Concurrent
+Imports System.Reflection
 Imports System.Text
 Imports Nukepayload2.Csv
 
@@ -6,8 +7,8 @@ Imports Nukepayload2.Csv
 ''' Convert collection to csv, or convert them back.
 ''' </summary>
 Public Class CsvConvert
-    Private Shared s_cachedColumns As New Dictionary(Of Type, CsvSheetInfo)
-    Private Shared s_cachedHeaderOrder As New Dictionary(Of Type, Integer())
+    Private Shared ReadOnly s_cachedColumns As New ConcurrentDictionary(Of Type, CsvSheetInfo)
+    Private Shared ReadOnly s_cachedHeaderOrder As New ConcurrentDictionary(Of Type, Integer())
 
     ''' <summary>
     ''' Release cached column information of processed model types. If you don't know the consequences, please do not call it.
@@ -51,7 +52,7 @@ Public Class CsvConvert
             Return Array.Empty(Of T)
         End If
         CheckColumnWriteAccess(columns)
-        ' TODO: Allocation can be reduced.
+
         Dim lines = text.SplitLines(settings.NewLine)
         If lines.Count < 2 Then
             Return Array.Empty(Of T)
@@ -102,7 +103,7 @@ Public Class CsvConvert
                     Where prop.CanRead AndAlso prop.GetMethod.IsPublic
                     Let formatInfo = prop.GetCustomAttribute(Of ColumnFormatAttribute)
                     Select formatInfo.ColumnIndex Into ToArray
-            s_cachedHeaderOrder.Add(columnType, value)
+            s_cachedHeaderOrder.GetOrAdd(columnType, value)
         End If
         Return value
     End Function
@@ -367,7 +368,7 @@ Public Class CsvConvert
                     Let formatInfo = prop.GetCustomAttribute(Of ColumnFormatAttribute)
                     Where propPredict(prop)
                     Select CreateCsvColumnInfo(prop, formatInfo, modelType, formatterCache) Into ToArray
-            s_cachedColumns.Add(modelType, value)
+            s_cachedColumns.GetOrAdd(modelType, value)
         End If
         Return value
     End Function

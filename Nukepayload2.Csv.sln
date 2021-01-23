@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2043
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "Nukepayload2.Csv", "Nukepayload2.Csv\Nukepayload2.Csv.vbproj", "{59E4BF39-38D5-4EF2-B503-344395C545E6}"
 EndProject
@@ -17,13 +17,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "Nukepayload2.Csv.InternalTests", "Nukepayload2.Csv.InternalTests\Nukepayload2.Csv.InternalTests.vbproj", "{BA4B9E5D-0979-45B2-A9D3-718931C1B0C0}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Nukepayload2.Csv.PerformanceTests", "Nukepayload2.Csv.PerformanceTests\Nukepayload2.Csv.PerformanceTests.vbproj", "{C26085E6-FCAF-41A9-BE60-EB3865258B27}"
+Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "Nukepayload2.Csv.PerformanceTests", "Nukepayload2.Csv.PerformanceTests\Nukepayload2.Csv.PerformanceTests.vbproj", "{C26085E6-FCAF-41A9-BE60-EB3865258B27}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Nukepayload2.Csv.TestCommon", "Nukepayload2.Csv.TestCommon\Nukepayload2.Csv.TestCommon.shproj", "{5C67A0AA-C587-4C87-881B-AC84D3AFFA7F}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Nukepayload2.Csv.TestCommon\Nukepayload2.Csv.TestCommon.projitems*{5c67a0aa-c587-4c87-881b-ac84d3affa7f}*SharedItemsImports = 13
+		Nukepayload2.Csv.TestCommon\Nukepayload2.Csv.TestCommon.projitems*{c26085e6-fcaf-41a9-be60-eb3865258b27}*SharedItemsImports = 5
+		Nukepayload2.Csv.TestCommon\Nukepayload2.Csv.TestCommon.projitems*{fa08eb83-2d3a-4c14-99b1-fa01a6175e49}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -68,6 +68,21 @@ Public Class TestCsvConvert
     End Sub
 
     <TestMethod>
+    Public Sub TestMutiThread()
+        Parallel.For(1, 100000,
+            Sub(i)
+                Select Case i Mod 3
+                    Case 0
+                        TestSerializeRaw()
+                    Case 1
+                        TestSerializeNullable()
+                    Case 2
+                        TestSerializeDecorated()
+                End Select
+            End Sub)
+    End Sub
+
+    <TestMethod>
     Public Sub TestAutoOrdered()
         Const Csv = "Rate,Id,Name,Date,IsUsed
 12345.12,-233,test string,2018-05-30,True

@@ -35,3 +35,6 @@ Added read-only models support.
 - Supported nullable primitive value types.
 - Refactored some preview members.
 - Supported Chinese and Japanese currency symbol in the built-in double parser.
+
+### 1.4.1
+- Added support for running in multi-threaded code.

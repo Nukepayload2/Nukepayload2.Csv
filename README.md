@@ -29,6 +29,7 @@ Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter
 |Custom format string for output|True|
 |Read-only properties|True|
 |Opt-in and Opt-out columns|True|
+|Run in multi-threaded code|True|
 |Custom format string for input|False|
 |Csv UTF-8 Stream to Objects|False|
 |Objects to UTF-8 Stream|False|
@@ -101,11 +102,11 @@ csv = CsvConvert.SerializeObject(converted);
 
 ## VB and C# model Code generator (Preview)
 1. Clone this repo.
-2. Make sure .NET Core 2.x SDK is installed.
+2. Make sure .NET Core 2.x or higher SDK is installed.
 3. Open cmd or bash in cloned code's root directory.
 4. Go the ModelGenerator directory `cd Nukepayload2.Csv.ModelGenerator`
 5. Build the project `dotnet build Nukepayload2.Csv.ModelGenerator.vbproj`
-6. To see help, execute `dotnet run bin\Debug\netcoreapp2.0\Nukepayload2.Csv.ModelGenerator.dll` (Change \ to / on Linux) .
+6. To see help, execute `dotnet run Nukepayload2.Csv.ModelGenerator.dll` (Change \ to / on Linux) .
 
 ## What is next?
 - [Prototyping] Column-oriented storage for loading huge csv file.
@@ -144,6 +145,7 @@ Nukepayload2.Csv 是一个跨平台的 Csv 字符串 &lt;==&gt; .NET 对象转�
 |自定义输出格式字符串|是|
 |只读属性支持|是|
 |选入和排除的 csv 列选择模式|是|
+|执行在多线程代码中|是|
 |自定义输入格式字符串|否|
 |UTF-8 流到对象|否|
 |对象 to UTF-8 流|否|
@@ -218,7 +220,7 @@ csv = CsvConvert.SerializeObject(converted);
 3. 在克隆后的代码根目录打开 cmd 或者 bash.
 4. 进入生成器的目录 `cd Nukepayload2.Csv.ModelGenerator`
 5. 编译 `dotnet build Nukepayload2.Csv.ModelGenerator.vbproj`
-6. 执行命令查看查看帮助 `dotnet run bin\Debug\netcoreapp2.0\Nukepayload2.Csv.ModelGenerator.dll` (Linux 上把 \ 改成 /) .
+6. 执行命令查看查看帮助 `dotnet run Nukepayload2.Csv.ModelGenerator.dll` (Linux 上把 \ 改成 /) .
 
 ## 下一步的计划?
 - [做原型] 为大型 Csv 准备的列式存储。
