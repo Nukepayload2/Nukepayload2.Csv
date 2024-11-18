@@ -102,16 +102,14 @@ csv = CsvConvert.SerializeObject(converted);
 
 ## VB and C# model Code generator (Preview)
 1. Clone this repo.
-2. Make sure .NET Core 2.x or higher SDK is installed.
+2. Make sure .NET 9 or higher SDK is installed.
 3. Open cmd or bash in cloned code's root directory.
 4. Go the ModelGenerator directory `cd Nukepayload2.Csv.ModelGenerator`
 5. Build the project `dotnet build Nukepayload2.Csv.ModelGenerator.vbproj`
 6. To see help, execute `dotnet run Nukepayload2.Csv.ModelGenerator.dll` (Change \ to / on Linux) .
 
 ## What is next?
-- [Prototyping] Column-oriented storage for loading huge csv file.
-- [Pending] Lower allocation (waiting for `ref struct` support in VB) https://github.com/dotnet/vblang/issues/297 .
-- [Pending] Optimize getter and setter for Int32, Int64, Single and Double since they are frequently used in csv.
+- AOT compatibility for .NET 8 and later (`PublishAot`)
 
 # Nukepayload2.Csv 中文介绍
 
@@ -216,13 +214,11 @@ csv = CsvConvert.SerializeObject(converted);
 
 ## VB 和 C# 模型代码生成器（预览）
 1. 克隆此仓库.
-2. 确保 .NET Core 2.x SDK 安装了.
+2. 确保 .NET 9 SDK 安装了.
 3. 在克隆后的代码根目录打开 cmd 或者 bash.
 4. 进入生成器的目录 `cd Nukepayload2.Csv.ModelGenerator`
 5. 编译 `dotnet build Nukepayload2.Csv.ModelGenerator.vbproj`
 6. 执行命令查看查看帮助 `dotnet run Nukepayload2.Csv.ModelGenerator.dll` (Linux 上把 \ 改成 /) .
 
 ## 下一步的计划?
-- [做原型] 为大型 Csv 准备的列式存储。
-- [挂起] 减少内存分配 （等 `ref struct` 在 VB 能用了再说） https://github.com/dotnet/vblang/issues/297 。
-- [挂起] 为常用的 Int32, Int64, Single 和 Double 提供读写性能优化。
+- 为 .NET 8 以及后续版本支持提前编译为本机代码 (`PublishAot`)
