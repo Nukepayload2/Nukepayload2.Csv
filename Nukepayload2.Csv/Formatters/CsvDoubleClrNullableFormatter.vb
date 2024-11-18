@@ -3,6 +3,10 @@
     Implements ICsvRecordFormatter
 
     Public Function Parse(text As StringSegment) As Object Implements ICsvRecordFormatter.Parse
+        Return ParseDouble(text)
+    End Function
+
+    Public Shared Function ParseDouble(text As StringSegment) As Double?
         If text.IsNullOrEmpty Then
             Return Nothing
         End If

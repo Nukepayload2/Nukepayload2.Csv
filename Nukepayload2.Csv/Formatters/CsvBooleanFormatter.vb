@@ -5,6 +5,10 @@
     Private Const AscIIToUpperMask As Integer = &HFFDF
 
     Public Function Parse(text As StringSegment) As Object Implements ICsvRecordFormatter.Parse
+        Return ParseBoolean(text)
+    End Function
+
+    Public Shared Function ParseBoolean(text As StringSegment) As Boolean
         If text.Length = 4 Then
             If (Convert.ToInt32(text(0)) And AscIIToUpperMask) = Convert.ToInt32("T"c) AndAlso
                (Convert.ToInt32(text(1)) And AscIIToUpperMask) = Convert.ToInt32("R"c) AndAlso

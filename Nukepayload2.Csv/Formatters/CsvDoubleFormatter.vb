@@ -4,11 +4,13 @@ Friend Class CsvDoubleFormatter
     Inherits Singleton(Of CsvDoubleFormatter)
     Implements ICsvRecordFormatter
 
-    Private ReadOnly _doubleView As New DoubleSemanticView
-
     Public Function Parse(text As StringSegment) As Object Implements ICsvRecordFormatter.Parse
+        Return ParseDouble(text)
+    End Function
+
+    Public Shared Function ParseDouble(text As StringSegment) As Double
         Dim value As Double = Nothing
-        If _doubleView.TryParse(text, value) Then
+        If DoubleSemanticView.TryParse(text, value) Then
             Return value
         End If
         Throw New FormatException

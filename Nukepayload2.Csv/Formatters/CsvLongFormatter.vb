@@ -3,6 +3,10 @@
     Implements ICsvRecordFormatter
 
     Public Function Parse(text As StringSegment) As Object Implements ICsvRecordFormatter.Parse
+        Return ParseInt64(text)
+    End Function
+
+    Public Shared Function ParseInt64(text As StringSegment) As Long
 #If NET8_0_OR_GREATER Then
 #Disable Warning BC40000 ' ref struct
         Dim textSpan = text.AsSpan

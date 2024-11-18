@@ -3,6 +3,10 @@
     Implements ICsvRecordFormatter
 
     Public Function Parse(text As StringSegment) As Object Implements ICsvRecordFormatter.Parse
+        Return ParseDateTime(text)
+    End Function
+
+    Public Shared Function ParseDateTime(text As StringSegment) As Date?
         If text.IsNullOrEmpty Then
             Return Nothing
         End If

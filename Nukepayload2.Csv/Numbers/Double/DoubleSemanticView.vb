@@ -2,7 +2,7 @@
     Friend Class DoubleSemanticView
         Private Const ZeroChar = AscW("0"c)
 
-        Friend Function TryParse(text As StringSegment, ByRef result As Double) As Boolean
+        Friend Shared Function TryParse(text As StringSegment, ByRef result As Double) As Boolean
             If Not text.IsNullOrEmpty Then
                 Dim syntaxTree As New SyntaxTree
                 If TryGetSyntaxTree(text, syntaxTree) Then
@@ -13,7 +13,7 @@
             Return False
         End Function
 
-        Private Function TryGetSyntaxTree(text As StringSegment, ByRef syntaxTree As SyntaxTree) As Boolean
+        Private Shared Function TryGetSyntaxTree(text As StringSegment, ByRef syntaxTree As SyntaxTree) As Boolean
             Dim strLen As Integer = text.Length
             Dim hasLeftParen As Boolean = False
             Dim hasRightParen As Boolean = False
@@ -244,7 +244,7 @@ CaseElse:               Dim success = syntaxTree.Children.TryAdd(New SyntaxNode(
             Return True
         End Function
 
-        Private Function TryParseExact(ByRef syntax As SyntaxTree, ByRef result As Double) As Boolean
+        Private Shared Function TryParseExact(ByRef syntax As SyntaxTree, ByRef result As Double) As Boolean
             Dim number As Double = 0.0
             Dim multipler As Double = 1.0
             Dim isNegative As Boolean = False
@@ -425,7 +425,7 @@ PlainNumber:        If syntax.HasParen Then
             Return True
         End Function
 
-        Private Sub ParseDecimal(ByRef number As Double, range As Range, text As StringSegment)
+        Private Shared Sub ParseDecimal(ByRef number As Double, range As Range, text As StringSegment)
             Dim dValue As Double = 0.0
             Dim endIndex As Integer = range.Length + range.Start
             For i = endIndex - 1 To range.Start Step -1
@@ -437,7 +437,7 @@ PlainNumber:        If syntax.HasParen Then
             number += dValue
         End Sub
 
-        Private Sub ParseInteger(ByRef number As Double, range As Range, text As StringSegment)
+        Private Shared Sub ParseInteger(ByRef number As Double, range As Range, text As StringSegment)
             Dim endIndex As Integer = range.Length + range.Start
             If range.Length <= 8 Then
                 Dim int32Value As Integer = 0
@@ -469,7 +469,7 @@ PlainNumber:        If syntax.HasParen Then
             End If
         End Sub
 
-        Private Sub ParseCurrencyInteger(ByRef number As Double, range As Range, text As StringSegment)
+        Private Shared Sub ParseCurrencyInteger(ByRef number As Double, range As Range, text As StringSegment)
             Dim endIndex As Integer = range.Length + range.Start
             For i = range.Start To endIndex - 1
                 Dim ch As Char = text(i)
@@ -479,7 +479,7 @@ PlainNumber:        If syntax.HasParen Then
             Next
         End Sub
 
-        Private Function TryParseExponent(ByRef number As Integer, range As Range, text As StringSegment, isEMinus As Boolean) As Boolean
+        Private Shared Function TryParseExponent(ByRef number As Integer, range As Range, text As StringSegment, isEMinus As Boolean) As Boolean
             If range.Length > 3 Then
                 Return False
             End If

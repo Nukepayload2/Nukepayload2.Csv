@@ -3,6 +3,10 @@
     Implements ICsvRecordFormatter
 
     Public Function Parse(text As StringSegment) As Object Implements ICsvRecordFormatter.Parse
+        Return ParseDouble(text)
+    End Function
+
+    Public Shared Function ParseDouble(text As StringSegment) As Double
         Dim value As Double = Nothing
 #If NET8_0_OR_GREATER Then
 #Disable Warning BC40000 ' ref struct
