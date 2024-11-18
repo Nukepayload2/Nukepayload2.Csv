@@ -33,6 +33,7 @@ NOTE: Please don't forget to add the "Code Generation" capability if you are usi
     <OptionStrict>On</OptionStrict>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <Deterministic>True</Deterministic>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -53,6 +54,12 @@ NOTE: Please don't forget to add the "Code Generation" capability if you are usi
 
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="..\readme.md">
+      <PackagePath>readme.md</PackagePath>
+    </Content>
   </ItemGroup>
 
 </Project>
