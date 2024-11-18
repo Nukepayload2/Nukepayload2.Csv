@@ -36,6 +36,8 @@ Friend Module CsvLineSplitter
                     If IsSeparator(text, i, newLine) Then
                         If length > 0 Then
                             result.Add(StringSegment.Slice(text, startIndex, length))
+                        Else
+                            result.Add(Nothing)
                         End If
                         startIndex = i + newLine.Length
                         i += newLine.Length
