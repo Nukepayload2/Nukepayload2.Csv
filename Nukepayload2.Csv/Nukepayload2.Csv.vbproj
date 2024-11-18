@@ -6,12 +6,14 @@
     <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
     <Authors>Nukepayload2</Authors>
     <Summary>Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter.</Summary>
-    <Copyright>Copyright 2018-2021 Nukepayload2</Copyright>
+    <Copyright>Copyright 2018 Nukepayload2</Copyright>
     <Company>Nukepayload2</Company>
     <RepositoryUrl>https://github.com/Nukepayload2/Nukepayload2.Csv.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>csv, tsv, formatter, serializer, converter, vb, netstandard</PackageTags>
-    <PackageReleaseNotes>- Added support for running in multi-threaded code.
+    <PackageReleaseNotes>- Improved compatibility of broken CSV rows that have more elements than columns.
+- Updated dependencies to solve vulnerability warnings. 
+- Reduced allocation by removing boxing and unboxing with dynamic methods.
 </PackageReleaseNotes>
     <Description>Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter.
 Commonly Used members:
@@ -29,8 +31,8 @@ NOTE: Please don't forget to add the "Code Generation" capability if you are usi
     <Version>1.5.0</Version>
     <PackageProjectUrl>https://github.com/Nukepayload2/Nukepayload2.Csv</PackageProjectUrl>
     <OptionStrict>On</OptionStrict>
-    <PackageLicenseUrl></PackageLicenseUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Deterministic>True</Deterministic>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

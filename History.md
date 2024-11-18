@@ -40,6 +40,6 @@ Added read-only models support.
 - Added support for running in multi-threaded code.
 
 ### 1.5.0
-- Improve compatibility of broken CSV rows that have more elements than columns.
+- Improved compatibility of broken CSV rows that have more elements than columns.
 - Updated dependencies to solve vulnerability warnings. 
 - Reduced allocation by removing boxing and unboxing with dynamic methods.
