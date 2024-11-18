@@ -17,6 +17,10 @@
     End Function
 
     Public Function GetString(data As Object, format As String) As String Implements ICsvRecordFormatter.GetString
-        Return DirectCast(data, Date).ToString(format)
+        Return GetDateTimeString(DirectCast(data, Date), format)
+    End Function
+
+    Public Shared Function GetDateTimeString(data As Date, format As String) As String
+        Return data.ToString(format)
     End Function
 End Class

@@ -21,9 +21,13 @@
     End Function
 
     Public Function GetString(data As Object, format As String) As String Implements ICsvRecordFormatter.GetString
+        Return GetInt32String(DirectCast(data, Integer?), format)
+    End Function
+
+    Public Shared Function GetInt32String(data As Integer?, format As String) As String
         If data Is Nothing Then
             Return Nothing
         End If
-        Return DirectCast(data, Integer).ToString(format)
+        Return data.Value.ToString(format)
     End Function
 End Class

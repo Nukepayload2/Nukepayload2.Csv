@@ -20,9 +20,13 @@ Friend Class CsvDoubleNullableFormatter
     End Function
 
     Public Function GetString(data As Object, format As String) As String Implements ICsvRecordFormatter.GetString
+        Return GetDoubleString(DirectCast(data, Double?), format)
+    End Function
+
+    Public Shared Function GetDoubleString(data As Double?, format As String) As String
         If data Is Nothing Then
             Return Nothing
         End If
-        Return DirectCast(data, Double).ToString(format)
+        Return data.Value.ToString(format)
     End Function
 End Class

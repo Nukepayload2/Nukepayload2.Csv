@@ -23,7 +23,10 @@
     End Function
 
     Public Function GetString(data As Object, format As String) As String Implements ICsvRecordFormatter.GetString
-        Return DirectCast(data, Double).ToString(format)
+        Return GetDoubleString(DirectCast(data, Double), format)
     End Function
 
+    Public Shared Function GetDoubleString(data As Double, format As String) As String
+        Return data.ToString(format)
+    End Function
 End Class

@@ -42,3 +42,4 @@ Added read-only models support.
 ### 1.5.0
 - Improve compatibility of broken CSV rows that have more elements than columns.
 - Updated dependencies to solve vulnerability warnings. 
+- Reduced allocation while parsing some data types.

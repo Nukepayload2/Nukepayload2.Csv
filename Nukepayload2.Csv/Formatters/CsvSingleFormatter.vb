@@ -18,6 +18,10 @@
     End Function
 
     Public Function GetString(data As Object, format As String) As String Implements ICsvRecordFormatter.GetString
-        Return DirectCast(data, Single).ToString(format)
+        Return GetSingleString(DirectCast(data, Single), format)
+    End Function
+
+    Public Shared Function GetSingleString(data As Single, format As String) As String
+        Return data.ToString(format)
     End Function
 End Class
