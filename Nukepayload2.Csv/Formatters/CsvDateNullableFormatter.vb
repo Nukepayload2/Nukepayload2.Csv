@@ -6,7 +6,13 @@
         If text.IsNullOrEmpty Then
             Return Nothing
         End If
+#If NET8_0_OR_GREATER Then
+#Disable Warning BC40000 ' ref struct
+        Return Date.Parse(text.AsSpan)
+#Enable Warning BC40000 ' ref struct
+#Else
         Return Date.Parse(text.CopyToString)
+#End If
     End Function
 
     Public Function GetString(data As Object, format As String) As String Implements ICsvRecordFormatter.GetString

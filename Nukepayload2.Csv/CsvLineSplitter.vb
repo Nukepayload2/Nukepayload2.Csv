@@ -154,6 +154,8 @@ Friend Module CsvLineSplitter
                     ElseIf Not result(resultIndex).IsNullOrEmpty Then
                         resultIndex += 1
                     End If
+                    ' Columns are full
+                    If resultIndex >= result.Length Then Return
                     i += separator.Length
                     recordStart = i
                     status = CsvLineSplitStatus.Unknown

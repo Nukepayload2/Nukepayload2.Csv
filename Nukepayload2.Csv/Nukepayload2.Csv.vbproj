@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RootNamespace>Nukepayload2.Csv</RootNamespace>
     <Title>Nukepayload2.Csv</Title>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
     <Authors>Nukepayload2</Authors>
     <Summary>Nukepayload2.Csv is a cross-platform Csv String &lt;==&gt; .NET Object converter.</Summary>
     <Copyright>Copyright 2018-2021 Nukepayload2</Copyright>
@@ -26,7 +26,7 @@ System.Single
 System.Double
 System.Boolean
 NOTE: Please don't forget to add the "Code Generation" capability if you are using this package in a UWP project. If JIT is not allowed, both serialization and deserialization could be much slower than expected.</Description>
-    <Version>1.4.1</Version>
+    <Version>1.5.0</Version>
     <PackageProjectUrl>https://github.com/Nukepayload2/Nukepayload2.Csv</PackageProjectUrl>
     <OptionStrict>On</OptionStrict>
     <PackageLicenseUrl></PackageLicenseUrl>
@@ -44,9 +44,8 @@ NOTE: Please don't forget to add the "Code Generation" capability if you are usi
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
     <DocumentationFile>Nukepayload2.Csv.xml</DocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Nukepayload2.Buffers" Version="1.0.0-beta" />
+  
+  <ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.1" />
   </ItemGroup>
 

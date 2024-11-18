@@ -70,5 +70,12 @@ Public Structure StringSegment
         Return CopyToString()
     End Function
 
+#If NET8_0_OR_GREATER Then
+    <Obsolete("ref struct")>
+    Public Function AsSpan() As ReadOnlySpan(Of Char)
+        Return _reference.AsSpan(_start, Length)
+    End Function
+#End If
+
     Public Shared ReadOnly Empty As New StringSegment(String.Empty, 0, 0)
 End Structure

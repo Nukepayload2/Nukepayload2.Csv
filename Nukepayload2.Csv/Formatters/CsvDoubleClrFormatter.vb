@@ -4,8 +4,14 @@
 
     Public Function Parse(text As StringSegment) As Object Implements ICsvRecordFormatter.Parse
         Dim value As Double = Nothing
-
-        If Double.TryParse(text.CopyToString, Globalization.NumberStyles.Any,
+#If NET8_0_OR_GREATER Then
+#Disable Warning BC40000 ' ref struct
+        Dim textSpan = text.AsSpan
+#Enable Warning BC40000 ' ref struct
+#Else
+        Dim textSpan = text.CopyToString
+#End If
+        If Double.TryParse(textSpan, Globalization.NumberStyles.Any,
                            Globalization.CultureInfo.CurrentCulture, value) Then
             Return value
         End If
