@@ -1,82 +1,31 @@
-﻿Imports System.Linq.Expressions
-Imports System.Reflection
+﻿Imports System.Reflection
 
 Friend MustInherit Class CsvColumnInfo
-    Public Name As String, FormatString As String, Formatter As ICsvRecordFormatter
-
-    Public Sub New(name As String, formatString As String, formatter As ICsvRecordFormatter)
+    Protected Sub New(name As String)
         Me.Name = name
-        Me.FormatString = formatString
-        Me.Formatter = formatter
     End Sub
+
+    Public ReadOnly Property Name As String
 
     Public MustOverride ReadOnly Property CanRead As Boolean
+
     Public MustOverride ReadOnly Property CanWrite As Boolean
 
-    Default Public MustOverride Property ColumnValue(entity As Object) As Object
 End Class
 
-Friend Class CsvColumnInfo(Of T)
+Friend MustInherit Class CsvColumnInfo(Of TEntity)
     Inherits CsvColumnInfo
 
-    Private ReadOnly GetMethod As Func(Of T, Object)
-    Private ReadOnly SetMethod As Action(Of T, Object)
-
-    Public Sub New(name As String, formatString As String, formatter As ICsvRecordFormatter, getMethod As MethodInfo, setMethod As MethodInfo)
-        MyBase.New(name, formatString, formatter)
-        If getMethod IsNot Nothing Then
-            Me.GetMethod = CompileGetMethod(getMethod)
-        End If
-        If setMethod IsNot Nothing Then
-            Me.SetMethod = CompileSetMethod(setMethod)
-        End If
+    Protected Sub New(name As String)
+        MyBase.New(name)
     End Sub
 
-    Private Function CompileGetMethod(getMethod As MethodInfo) As Func(Of T, Object)
-        Dim instanceType As Type = getMethod.DeclaringType
-        Dim paramExpr = Expression.Parameter(instanceType)
-        Return Expression.Lambda(Of Func(Of T, Object))(
-            Expression.Convert(Expression.Call(Expression.Convert(paramExpr, instanceType), getMethod), GetType(Object)),
-            {paramExpr}
-        ).Compile
-    End Function
-
-    Private Function CompileSetMethod(setMethod As MethodInfo) As Action(Of T, Object)
-        Dim instanceType As Type = setMethod.DeclaringType
-        Dim propValueType As Type = setMethod.GetParameters(0).ParameterType
-        Dim param1 = Expression.Parameter(instanceType)
-        Dim param2 = Expression.Parameter(GetType(Object))
-        Return Expression.Lambda(Of Action(Of T, Object))(
-            Expression.Call(Expression.Convert(param1, instanceType), setMethod,
-                Expression.Convert(param2, propValueType)
-            ), {param1, param2}
-        ).Compile
-    End Function
-
-    Default Public Overrides Property ColumnValue(entity As Object) As Object
-        Get
-            Return GetMethod.Invoke(DirectCast(entity, T))
-        End Get
-        Set(value As Object)
-            SetMethod.Invoke(DirectCast(entity, T), value)
-        End Set
-    End Property
-
-    Public Overrides ReadOnly Property CanRead As Boolean
-        Get
-            Return GetMethod IsNot Nothing
-        End Get
-    End Property
-
-    Public Overrides ReadOnly Property CanWrite As Boolean
-        Get
-            Return SetMethod IsNot Nothing
-        End Get
-    End Property
+    Public MustOverride Function GetTextValue(entity As TEntity) As String
+    Public MustOverride Sub SetParsedValue(text As StringSegment, entity As TEntity)
 End Class
 
 Friend Class CsvColumnInfo(Of TEntity, TProperty)
-    Public ReadOnly Property Name As String
+    Inherits CsvColumnInfo(Of TEntity)
 
     Private ReadOnly FormatString As String
     Private ReadOnly Formatter As ICsvRecordFormatter
@@ -86,7 +35,7 @@ Friend Class CsvColumnInfo(Of TEntity, TProperty)
     Private ReadOnly SetParsedValueImpl As SetParsedValueDelegate
 
     Public Sub New(name As String, formatString As String, formatter As ICsvRecordFormatter, getMethod As MethodInfo, setMethod As MethodInfo)
-        Me.Name = name
+        MyBase.New(name)
         Me.FormatString = formatString
         Me.Formatter = formatter
         If getMethod IsNot Nothing Then
@@ -107,13 +56,13 @@ Friend Class CsvColumnInfo(Of TEntity, TProperty)
         Return DirectCast(setMethod.CreateDelegate(GetType(Action(Of TEntity, TProperty))), Action(Of TEntity, TProperty))
     End Function
 
-    Public ReadOnly Property CanRead As Boolean
+    Public Overrides ReadOnly Property CanRead As Boolean
         Get
             Return GetMethod IsNot Nothing
         End Get
     End Property
 
-    Public ReadOnly Property CanWrite As Boolean
+    Public Overrides ReadOnly Property CanWrite As Boolean
         Get
             Return SetMethod IsNot Nothing
         End Get
@@ -122,7 +71,7 @@ Friend Class CsvColumnInfo(Of TEntity, TProperty)
     Private Delegate Sub SetParsedValueDelegate(text As StringSegment, entity As TEntity)
     Private Delegate Function GetTextValueDelegate(entity As TEntity) As String
 
-    Public Sub SetParsedValue(text As StringSegment, entity As TEntity)
+    Public Overrides Sub SetParsedValue(text As StringSegment, entity As TEntity)
         SetParsedValueImpl(text, entity)
     End Sub
 
@@ -130,7 +79,7 @@ Friend Class CsvColumnInfo(Of TEntity, TProperty)
         SetMethod(entity, CType(Formatter.Parse(text), TProperty))
     End Sub
 
-    Public Function GetTextValue(entity As TEntity) As String
+    Public Overrides Function GetTextValue(entity As TEntity) As String
         Return GetTextValueImpl(entity)
     End Function
 

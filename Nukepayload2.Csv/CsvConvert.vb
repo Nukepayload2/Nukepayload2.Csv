@@ -47,7 +47,7 @@ Public Class CsvConvert
         End If
         Dim columnType As Type = GetType(T)
         Dim sheetInfo = GetColumns(columnType, settings.RecordFormatterCache, settings.ColumnSelectionMode)
-        Dim columns = sheetInfo.ColumnInfo
+        Dim columns = sheetInfo.ColumnInfo.Cast(Of CsvColumnInfo(Of T)).ToArray
         If columns.Length = 0 OrElse String.IsNullOrEmpty(text) Then
             Return Array.Empty(Of T)
         End If
@@ -108,7 +108,7 @@ Public Class CsvConvert
         Return value
     End Function
 
-    Private Shared Function InputEntity(Of T As New)(line As StringSegment, columns() As CsvColumnInfo, separator As String) As T
+    Private Shared Function InputEntity(Of T As New)(line As StringSegment, columns() As CsvColumnInfo(Of T), separator As String) As T
         ' TODO: Allocation can be reduced.
         Dim lineContent(columns.Length - 1) As StringSegment
         line.SplitElementsInto(separator, lineContent, StringSplitOptions.None)
@@ -116,12 +116,12 @@ Public Class CsvConvert
         For i = 0 To columns.Length - 1
             Dim col = columns(i)
             Dim data = lineContent(i)
-            col(entity) = col.Formatter.Parse(data)
+            col.SetParsedValue(data, entity)
         Next
         Return entity
     End Function
 
-    Private Shared Function InputEntity(Of T As New)(line As StringSegment, order As Integer(), columns() As CsvColumnInfo, separator As String) As T
+    Private Shared Function InputEntity(Of T As New)(line As StringSegment, order As Integer(), columns() As CsvColumnInfo(Of T), separator As String) As T
         ' TODO: Allocation can be reduced.
         Dim lineContent(columns.Length - 1) As StringSegment
         line.SplitElementsInto(separator, lineContent, StringSplitOptions.None)
@@ -129,10 +129,7 @@ Public Class CsvConvert
         For i = 0 To columns.Length - 1
             Dim col = columns(i)
             Dim data = lineContent(order(i))
-            ' The slowest part.
-            ' TODO: Numbers should be parsed in a more effective way
-            ' since we do not support NumberStyles and IFormatProvider.
-            col(entity) = col.Formatter.Parse(data)
+            col.SetParsedValue(data, entity)
         Next
         Return entity
     End Function
@@ -198,7 +195,7 @@ Public Class CsvConvert
         End If
         Dim columnType As Type = GetType(T)
         Dim sheetInfo = GetColumns(columnType, settings.RecordFormatterCache, settings.ColumnSelectionMode)
-        Dim columns = sheetInfo.ColumnInfo
+        Dim columns = sheetInfo.ColumnInfo.Cast(Of CsvColumnInfo(Of T)).ToArray
         Dim columnLength As Integer = columns.Length
         If columnLength = 0 OrElse objs Is Nothing Then
             Return String.Empty
@@ -226,14 +223,13 @@ Public Class CsvConvert
                         For j = 0 To columnLength - 2
                             Dim obj = roList(i)
                             Dim col = columns(order(j))
-                            Dim value = col(obj)
+                            Dim value = col.GetTextValue(obj)
                             ' The slowest part.
-                            ' TODO: If FormatString = Nothing, numbers should be written in a optimized way.
-                            EscapeAppend(col.Formatter.GetString(value, col.FormatString), separator, newline, sb)
+                            EscapeAppend(value, separator, newline, sb)
                             sb.Append(separator)
                         Next
-                        Dim lastValue = lastCol(roList(i))
-                        EscapeAppend(lastCol.Formatter.GetString(lastValue, lastCol.FormatString), separator, newline, sb)
+                        Dim lastValue = lastCol.GetTextValue(roList(i))
+                        EscapeAppend(lastValue, separator, newline, sb)
                         sb.Append(newline)
                     Next
                 Else
@@ -241,8 +237,7 @@ Public Class CsvConvert
                     ' We will not optimize for this path.
                     For Each obj In objs
                         sb.Append(String.Join(separator, OrderSelect((Aggregate col In columns
-                                                             Let value = col(obj)
-                                                             Select col.Formatter.GetString(value, col.FormatString)
+                                                             Select col.GetTextValue(obj)
                                                              Into ToArray), order))).Append(newline)
                     Next
                 End If
@@ -262,21 +257,20 @@ Public Class CsvConvert
                         For j = 0 To columnLength - 2
                             Dim obj = roList(i)
                             Dim col = columns(j)
-                            Dim value = col(obj)
-                            EscapeAppend(col.Formatter.GetString(value, col.FormatString), separator, newline, sb)
+                            Dim value = col.GetTextValue(obj)
+                            EscapeAppend(value, separator, newline, sb)
                             sb.Append(separator)
                         Next
-                        Dim lastValue = lastCol(roList(i))
-                        EscapeAppend(lastCol.Formatter.GetString(lastValue, lastCol.FormatString), separator, newline, sb)
+                        Dim lastValue = lastCol.GetTextValue(roList(i))
+                        EscapeAppend(lastValue, separator, newline, sb)
                         sb.Append(newline)
                     Next
                 Else
-                    ' Use non IReadOnlyList(Of T) means high-performance is not required.
-                    ' We will not optimize for this path.
+                    ' TODO: optimize it with array pooled row buffers.
                     For Each obj In objs
                         sb.Append(String.Join(separator, From col In columns
-                                                         Let value = col(obj)
-                                                         Select Escape(col.Formatter.GetString(value, col.FormatString), separator))).Append(newline)
+                                                         Let value = col.GetTextValue(obj)
+                                                         Select Escape(value, separator))).Append(newline)
                     Next
                 End If
         End Select
@@ -363,18 +357,19 @@ Public Class CsvConvert
             If orderKindOverride IsNot Nothing Then
                 value.ColumnOrderKind = orderKindOverride.ColumnOrderKind
             End If
-            value.ColumnInfo = Aggregate prop In modelType.GetRuntimeProperties
-                    Where prop.CanRead AndAlso prop.GetMethod.IsPublic
-                    Let formatInfo = prop.GetCustomAttribute(Of ColumnFormatAttribute)
-                    Where propPredict(prop)
-                    Select CreateCsvColumnInfo(prop, formatInfo, modelType, formatterCache) Into ToArray
+            value.ColumnInfo =
+                Aggregate prop In modelType.GetRuntimeProperties
+                Where prop.CanRead AndAlso prop.GetMethod.IsPublic
+                Let formatInfo = prop.GetCustomAttribute(Of ColumnFormatAttribute)
+                Where propPredict(prop)
+                Select CreateCsvColumnInfo(prop, formatInfo, modelType, formatterCache) Into ToArray
             s_cachedColumns.GetOrAdd(modelType, value)
         End If
         Return value
     End Function
 
     Private Shared Function CreateCsvColumnInfo(prop As PropertyInfo, formatInfo As ColumnFormatAttribute, modelType As Type, formatterCache As ICsvRecordFormatterCache) As CsvColumnInfo
-        Dim instance = Activator.CreateInstance(GetType(CsvColumnInfo(Of)).MakeGenericType(modelType),
+        Dim instance = Activator.CreateInstance(GetType(CsvColumnInfo(Of,)).MakeGenericType(modelType, prop.PropertyType),
                                    If(formatInfo?.Name, prop.Name),
                                    formatInfo?.FormatString,
                                    prop.PropertyType.GetFormatter(formatterCache),
